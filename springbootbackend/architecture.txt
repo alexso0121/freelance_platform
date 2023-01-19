@@ -1,0 +1,6 @@
+Microservices:
+1.User: User info
+2.jobs: handling jobs(Address)
+3.inbox: System info/communication platform
+4.security 
+5.payment
