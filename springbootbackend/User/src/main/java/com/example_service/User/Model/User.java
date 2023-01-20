@@ -21,8 +21,8 @@ public class User {
     @Id
     @GeneratedValue
     private int id;
-    private String Name;
-    private String FullName;
+    private String name;
+    private String fullName;
     private String email;
     private String address;
     private String skillSet;

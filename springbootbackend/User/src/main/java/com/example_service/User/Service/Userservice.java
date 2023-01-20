@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
 import java.util.EmptyStackException;
+import java.util.Objects;
 
 @Service
 public class Userservice {
@@ -17,29 +18,31 @@ public class Userservice {
    
     public signupResponse signup(User user){
         signupResponse res=new signupResponse();
-        res.setId(user.getId());
+
          if(getUserbyName(user.getName())!=null){
-             res.setToken("the username has already been used");;
+             res.setToken("the username has already been used");
+             return res;
          }else if(userRespository.findUserbyEmail(user.getEmail())!=null){
-             res.setToken("the email has already been registered");;
+             res.setToken("the email has already been registered");
          }else{
-             return "Successful Signup";
+             User saveduser=userRespository.save(user);
+             res.setId(saveduser.getId());
+             res.setToken("Successful signup");
          }
          return res;
     }
 
     public User getUserbyName(String name){
-        return userRespository.findUserbyName(name).orElse(null);
+        return userRespository.findUserbyName(name);
     }
 
     public String updateUser(User user){
-        if(getUserbyName(user.getName())!=null){
+        User existinguser=userRespository.findById(user.getId()).orElseThrow(EmptyStackException::new);
+        if(!Objects.equals(existinguser.getName(), existinguser.getName()) &&getUserbyName(user.getName())!=null){
             return "the username has already been used";
-        }else if(userRespository.findUserbyEmail(user.getEmail())!=null){
+        }else if(!Objects.equals(existinguser.getEmail(), existinguser.getEmail()) &&userRespository.findUserbyEmail(user.getEmail())!=null){
             return "the email has already been registered";
         }else{
-        User existinguser=userRespository.findById(user.getId()).orElseThrow(EmptyStackException::new);
-
         existinguser.setCv(user.getCv());
         existinguser.setEmail(user.getEmail());
         existinguser.setAddress(user.getAddress());
