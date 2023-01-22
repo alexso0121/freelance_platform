@@ -8,40 +8,35 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Primary;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.testcontainers.junit.jupiter.Testcontainers;
-
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+//integration test for crud template
+//need to set the sql properties ->create-drop
 
 @SpringBootTest
 @AutoConfigureMockMvc
 class UserApplicationTests {
-
 
 	@Autowired
 	private MockMvc mockMvc;
 
 	@Autowired
 	private UserRespository userRespository;
-	@Autowired
-	private Bean bean;
-
 
 	@Autowired
 	private ObjectMapper objectMapper;
 
 
+	//test post
 	@Test
 	void shouldCreateUser() throws Exception {
+		//build user object
 		User user=mockuser();
 		String request=objectMapper.writeValueAsString(user);
 
@@ -49,19 +44,23 @@ class UserApplicationTests {
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(request))
 				.andExpect(status().isCreated());
+		//Assertion
 		Assertions.assertEquals(1, userRespository.findAll().size());
 
 
 }
 
+	//test get
 	@Test
 	void shouldGetUser() throws Exception {
+		//save the record first
 		userRespository.save(mockuser());
 		mockMvc.perform(MockMvcRequestBuilders.get("/user/{id}",1)
 				).andExpect(status().isFound())
 				.andExpect(jsonPath("$.name").value("alex"));
 	}
 
+	//test update
 	@Test
 	void shouldUpdateUser() throws Exception {
 		userRespository.save(mockuser());
@@ -81,6 +80,7 @@ class UserApplicationTests {
 
 	}
 
+	//test delete
 	@Test
 	void shouldDeleteUser() throws Exception {
 		userRespository.save(mockuser());
@@ -95,6 +95,7 @@ class UserApplicationTests {
 	}
 
 
+	//build a user
 	User mockuser(){
 		User user=new User();
 		user.setId(1);

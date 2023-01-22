@@ -2,22 +2,21 @@ package com.example_service.User.Service;
 
 import com.example_service.User.Model.User;
 import com.example_service.User.Repository.UserRespository;
-import com.example_service.User.dto.signupResponse;
+import com.example_service.User.dto.AuthResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
 import java.util.EmptyStackException;
 import java.util.Objects;
 
 @Service
-public class Userservice {
+public class UserCrudservice {
     @Autowired
     private UserRespository userRespository;
 
    
-    public signupResponse signup(User user){
-        signupResponse res=new signupResponse();
+    public AuthResponse signup(User user){
+        AuthResponse res=new AuthResponse();
 
          if(getUserbyName(user.getName())!=null){
              res.setToken("the username has already been used");
@@ -48,7 +47,7 @@ public class Userservice {
         existinguser.setAddress(user.getAddress());
         existinguser.setAddress_id(user.getAddress_id());
         existinguser.setFullName(user.getFullName());
-        existinguser.setSkillSet(user.getSkillSet());
+        existinguser.setSkill_set((user.getSkill_set()));
         existinguser.setContact(user.getContact());
         existinguser.setName(user.getName());
         userRespository.save(existinguser);
@@ -58,4 +57,6 @@ public class Userservice {
         userRespository.deleteById(id);
         return "User with id "+id +"is removed";
     }
+
+
 }

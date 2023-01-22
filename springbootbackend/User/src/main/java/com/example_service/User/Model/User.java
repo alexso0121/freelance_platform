@@ -7,8 +7,7 @@ import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-
+import lombok.Value;
 
 
 @Data
@@ -22,13 +21,16 @@ public class User {
     @GeneratedValue
     private int id;
     private String name;
+    private String password;
     private String fullName;
     private String email;
     private String address;
-    private String skillSet;
+    private String skill_set;
 
     private String contact;
     private String cv;
+
+    private double score=3.0;
 
     private int Address_id;
 
