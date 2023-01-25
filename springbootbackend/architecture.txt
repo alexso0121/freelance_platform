@@ -1,9 +1,0 @@
-Microservices:
-1.User: User info
-2.jobs: handling jobs(Address)
-3.inbox: communication platform
-4.security 
-5.payment
-6.notification (job request and accept)/sys notice
-
-https://geodata.gov.hk/gs/identifyAPI
