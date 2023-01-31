@@ -1,9 +1,7 @@
 package com.springboot.sohinalex.java.config;
 
-import com.springboot.sohinalex.java.dto.UserDto;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpHeaders;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
@@ -11,8 +9,6 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
-
-import java.util.logging.Logger;
 
 @Slf4j
 @Component
@@ -23,15 +19,17 @@ public class AuthFilter extends AbstractGatewayFilterFactory<AuthFilter.Config> 
     @Autowired
     private JwtDecoder jwtDecoder;
 
-    private final WebClient.Builder webClientBuilder;
 
-    public AuthFilter(WebClient.Builder webClientBuilder) {
-        this.webClientBuilder = webClientBuilder;
+
+    public AuthFilter() {
+        super(Config.class);
+
     }
 
     @Override
     public GatewayFilter apply(Config config) {
         return (exchange, chain) -> {
+            log.info("filter by the Auth filter");
             // Pre-processing
             if (config.isPreLogger()) {
                 log.info("Pre GatewayFilter logging: "
@@ -46,14 +44,15 @@ public class AuthFilter extends AbstractGatewayFilterFactory<AuthFilter.Config> 
             if(parts.length!=2|| !"Bearer".equals(parts[0])) {
                 throw new RuntimeException(("Incorrect auth Structure"));
             }
-            try{
+
             Jwt jwt = jwtDecoder.decode(parts[1]);
-                if(jwt.getIssuedAt().toString()!="http://localhost:8080"){
-                    throw new RuntimeException()
+                if(!jwt.getIssuer().toString().equals("http://localhost:8080") ||  !jwt.getClaim("secret").equals("AMDM:LM:LSMLdfsf") ){
+                    System.out.println(jwt.getIssuer().toString());
+                    throw new RuntimeException("Invalid token");
                 }
-            }catch (Exception exception){
-                log.info("not a token");
-            }
+                if(jwt.getSubject()=="al"){
+                    throw new RuntimeException("test valid");
+                }
 
 
 

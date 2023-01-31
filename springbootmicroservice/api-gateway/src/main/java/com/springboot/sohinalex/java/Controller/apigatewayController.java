@@ -1,21 +1,21 @@
 package com.springboot.sohinalex.java.Controller;
 
-import com.google.api.client.auth.openidconnect.IdTokenVerifier;
+
+import com.springboot.sohinalex.java.dto.BasicAuth;
+import com.springboot.sohinalex.java.dto.SignupDto;
 import com.springboot.sohinalex.java.service.TokenService;
-import org.springframework.security.core.Authentication;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
 import java.util.Map;
 
 @RestController
-public class apigatewayController extends IdTokenVerifier {
+@Slf4j
+public class apigatewayController  {
     private final TokenService tokenService;
 
     public apigatewayController(TokenService tokenService) {
@@ -27,9 +27,14 @@ public class apigatewayController extends IdTokenVerifier {
     }
 
     @PostMapping("/signin")
-    public String login(Authentication authentication){
-        String token=tokenService.generateToken(authentication);
+    public String login(BasicAuth basicAuth){
+        String token=tokenService.generateToken(basicAuth);
+        log.info("a token is distributed");
         return token;
+    }
+    @PostMapping("/signup")
+    public String signup(@RequestBody SignupDto user) throws Exception {
+       return tokenService.signup(user);
     }
 
     @GetMapping("/login/oauth2/code/google")
