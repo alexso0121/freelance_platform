@@ -1,8 +1,5 @@
 package com.springboot.sohinalex.java.Model;
 
-import com.springboot.sohinalex.java.dto.UserAuthdto;
-import org.springframework.context.annotation.Bean;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -12,31 +9,31 @@ import java.util.Collection;
 
 public class SecurityUser implements UserDetails {
 
-    private  final UserAuthdto user;
+    private  final user_info userinfo;
 
-    public SecurityUser(UserAuthdto user) {
-        this.user = user;
+    public SecurityUser(user_info userinfo) {
+        this.userinfo = userinfo;
     }
 
 
 
     public int getID(){
-        return user.getId();
+        return userinfo.getId();
     }
     @Override
     public String getPassword() {
-        return user.getPassword();
+        return userinfo.getPassword();
     }
 
     @Override
     public String getUsername() {
-        return user.getUsername();
+        return userinfo.getUsername();
     }
 
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Arrays.stream(user
+        return Arrays.stream(userinfo
                         .getRole()
                         .split(","))
                 .map(SimpleGrantedAuthority::new)

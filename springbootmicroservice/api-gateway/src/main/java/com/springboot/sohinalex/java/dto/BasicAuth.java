@@ -8,8 +8,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Data
 public class BasicAuth {
-    @Null
-    private int id;
+
+
     private String username;
     private String password;
 

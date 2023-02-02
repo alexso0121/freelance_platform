@@ -1,14 +1,14 @@
 package com.springboot.sohinalex.java.Controller;
 
 
-import com.springboot.sohinalex.java.dto.BasicAuth;
 import com.springboot.sohinalex.java.dto.SignupDto;
 import com.springboot.sohinalex.java.service.TokenService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.user.OAuth2User;
-import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Mono;
 
 import java.util.Collections;
 import java.util.Map;
@@ -21,19 +21,19 @@ public class apigatewayController  {
     public apigatewayController(TokenService tokenService) {
         this.tokenService = tokenService;
     }
-    @GetMapping("/decode/{token}")
+  /*  @GetMapping("/decode/{token}")
     public Jwt decode(@PathVariable String token) throws Exception {
         return tokenService.getName(token);
-    }
+    }*/
 
     @PostMapping("/signin")
-    public String login(BasicAuth basicAuth){
-        String token=tokenService.generateToken(basicAuth);
+    public String login(Authentication auth){
+        String token=tokenService.generateToken(auth);
         log.info("a token is distributed");
         return token;
     }
     @PostMapping("/signup")
-    public String signup(@RequestBody SignupDto user) throws Exception {
+    public Mono<String> signup(@RequestBody SignupDto user) throws Exception {
        return tokenService.signup(user);
     }
 

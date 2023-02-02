@@ -10,30 +10,17 @@ import com.springboot.sohinalex.java.service.SecurityUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ReactiveAuthenticationManager;
-import org.springframework.security.authentication.UserDetailsRepositoryReactiveAuthenticationManager;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
-import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.method.configuration.EnableReactiveMethodSecurity;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
-import org.springframework.security.core.userdetails.MapReactiveUserDetailsService;
-import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import org.springframework.security.web.server.SecurityWebFilterChain;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 
 
 import static org.springframework.security.config.Customizer.withDefaults;
@@ -52,9 +39,11 @@ public class SecurityConfig  {
     private final SecurityUserService securityUserService;
 
 
+
     public SecurityConfig(RsaKeyProp rsaKeys, SecurityUserService securityUserService) {
         this.rsaKeys = rsaKeys;
         this.securityUserService = securityUserService;
+
     }
    /* @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig)  {
@@ -70,7 +59,7 @@ public class SecurityConfig  {
    }
 
 
-    @Bean
+   /* @Bean
     protected ReactiveAuthenticationManager reactiveAuthenticationManager() {
 
         log.info("Received authentication request");
@@ -83,7 +72,7 @@ public class SecurityConfig  {
 
             return authenticator.authenticate(authentication);
         };
-    }
+    }*/
 
 
     @Bean
@@ -94,7 +83,7 @@ public class SecurityConfig  {
                 .csrf(csrf -> csrf.disable())
 
                 .authorizeExchange(auth->
-                        auth.pathMatchers("/signup").permitAll()
+                        auth.pathMatchers("/signup","/signin").permitAll()
                                 .anyExchange().authenticated()
                        )
                 // .addFilterAt(jwtFilter,SecurityWebFiltersOrder.LOGOUT)

@@ -1,41 +1,44 @@
 package com.springboot.sohinalex.java.service;
 
 import com.springboot.sohinalex.java.Model.SecurityUser;
-import com.springboot.sohinalex.java.dto.UserAuthdto;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.springboot.sohinalex.java.Model.user_info;
+import com.springboot.sohinalex.java.respository.UserRespository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 @Service
+@Slf4j
 public class SecurityUserService implements ReactiveUserDetailsService {
 
-    @Autowired
-    private WebClient.Builder webClientBuilder;
 
+    private final UserRespository userRespository;
+
+    public SecurityUserService(UserRespository userRespository) {
+        this.userRespository = userRespository;
+    }
 
 
     @Override
     public Mono<UserDetails> findByUsername(String username) {
-        return webClientBuilder.baseUrl("http://USER").build().get()
-                .uri(uriBuilder -> uriBuilder
-                        .path("/User/AuthUser/{username}")
-                        .build(username))
-                .retrieve()
-                .bodyToMono(UserAuthdto.class)
-                .map(
-                        SecurityUser::new
-                        //res->new SecurityUser(res)
-                )
+
+            log.info("get user");
+
+        Mono<UserDetails> ans=  userRespository.findByyUsername(username)
+                      .switchIfEmpty(Mono.error(new RuntimeException())).map(
+                      SecurityUser::new
+              );
+
+        ans.doOnNext(System.out::println).subscribe();
+
+              return ans;
 
 
 
 
-                ; //make syn request
+
         //map the userresult into securityuser
        /* if(result!=null){
             return Mono.just(new SecurityUser(result));
