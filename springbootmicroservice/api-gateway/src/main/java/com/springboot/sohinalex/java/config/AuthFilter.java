@@ -8,12 +8,13 @@ import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFac
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.stereotype.Component;
-import org.springframework.web.reactive.function.client.WebClient;
+
+import java.util.Objects;
 
 @Slf4j
 @Component
+//add a filter to filter the non-valid jwt
 public class AuthFilter extends AbstractGatewayFilterFactory<AuthFilter.Config> {
-
 
 
     @Autowired
@@ -36,6 +37,7 @@ public class AuthFilter extends AbstractGatewayFilterFactory<AuthFilter.Config> 
                         + config.getBaseMessage());
             }
 
+            //check if it is bearer token
             if(!exchange.getRequest().getHeaders().containsKey(HttpHeaders.AUTHORIZATION)){
                 throw new RuntimeException("Missing auth information");}
             String authHeader=exchange.getRequest().getHeaders().get(HttpHeaders.AUTHORIZATION).get(0);
@@ -45,12 +47,13 @@ public class AuthFilter extends AbstractGatewayFilterFactory<AuthFilter.Config> 
                 throw new RuntimeException(("Incorrect auth Structure"));
             }
 
+            //validate the token
             Jwt jwt = jwtDecoder.decode(parts[1]);
                 if(!jwt.getIssuer().toString().equals("http://localhost:8080") ||  !jwt.getClaim("secret").equals("AMDM:LM:LSMLdfsf") ){
                     System.out.println(jwt.getIssuer().toString());
                     throw new RuntimeException("Invalid token");
                 }
-                if(jwt.getSubject()=="al"){
+                if(Objects.equals(jwt.getSubject(), "al")){
                     throw new RuntimeException("test valid");
                 }
 

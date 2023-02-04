@@ -12,6 +12,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
+
 @Configuration
 @Slf4j
 public class ReactiveAuthManger implements ReactiveAuthenticationManager {
@@ -30,21 +32,24 @@ public class ReactiveAuthManger implements ReactiveAuthenticationManager {
     @Override
     public Mono<Authentication> authenticate(Authentication authentication) throws TypeMismatchException {
         log.info("Received authentication request");
-        Mono<String> password = securityUserService.findByUsername(authentication.getName())
-                .map(res->res.getPassword());
 
-        return Mono.just(authentication)
+       /* Mono<String> password=securityUserService.findByUsername(authentication.getName())
+                .doOnNext(System.out::println)
+                .map(UserDetails::getPassword);*/
+
+        return Mono.just(authentication);
+                /*.doOnNext(authentication1 -> System.out.println("start"))
+                .switchIfEmpty(Mono.error(new RuntimeException()))
                     .map(auth->{
                         System.out.println(passwordEncoder.encode(auth.getCredentials().toString()));
-                        log.info(String.valueOf(password));
-
                         //if(Mono.just(passwordEncoder.matches(auth.getCredentials().toString(),password.doOnNext(System.out::println).subscribe()))){
-                        password.subscribe(
+
+                                password.map(
                                 res -> {
                             log.info("STart match");
                             if(passwordEncoder.matches(auth.getCredentials().toString(), res)){
                         log.info("password match");
-                         new UsernamePasswordAuthenticationToken(
+                         return new UsernamePasswordAuthenticationToken(
                                  auth.getName(),null,auth.getAuthorities()
                          );
 
@@ -53,9 +58,7 @@ public class ReactiveAuthManger implements ReactiveAuthenticationManager {
 
                         }
 
-
-
                     });
                         return auth;
-                    });
+                    });*/
 }}

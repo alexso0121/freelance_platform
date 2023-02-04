@@ -1,17 +1,15 @@
 package com.springboot.sohinalex.java.dto;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import reactor.core.publisher.Mono;
 
 @AllArgsConstructor
-@NoArgsConstructor
-@Builder
 @Data
-public class UserDto {
+public class AuthResponse {
 
-    private long id;
-    private String login;
+    private Mono<Integer> user_id;
     private String token;
+
+
 }

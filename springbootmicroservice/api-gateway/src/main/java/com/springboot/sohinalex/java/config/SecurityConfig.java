@@ -10,9 +10,9 @@ import com.springboot.sohinalex.java.service.SecurityUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.ReactiveAuthenticationManager;
 import org.springframework.security.config.annotation.method.configuration.EnableReactiveMethodSecurity;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
+import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -21,6 +21,7 @@ import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import org.springframework.security.web.server.SecurityWebFilterChain;
+import org.springframework.security.web.server.authentication.AuthenticationWebFilter;
 
 
 import static org.springframework.security.config.Customizer.withDefaults;
@@ -40,9 +41,12 @@ public class SecurityConfig  {
 
 
 
+
+
     public SecurityConfig(RsaKeyProp rsaKeys, SecurityUserService securityUserService) {
         this.rsaKeys = rsaKeys;
         this.securityUserService = securityUserService;
+
 
     }
    /* @Bean
@@ -84,13 +88,15 @@ public class SecurityConfig  {
 
                 .authorizeExchange(auth->
                         auth.pathMatchers("/signup","/signin").permitAll()
+
                                 .anyExchange().authenticated()
                        )
-                // .addFilterAt(jwtFilter,SecurityWebFiltersOrder.LOGOUT)
 
+                // .addFilterAt(jwtFilter,SecurityWebFiltersOrder.LOGOUT)
                 .oauth2ResourceServer(ServerHttpSecurity.OAuth2ResourceServerSpec::jwt)
                 //.sessionManagement(session-> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .httpBasic(withDefaults())
+                //.addFilterAfter(new AuthenticationWebFilter(reactiveAuthManger), SecurityWebFiltersOrder.REACTOR_CONTEXT)
                 .build();
 
 

@@ -4,6 +4,7 @@ import com.springboot.sohinalex.java.Model.SecurityUser;
 import com.springboot.sohinalex.java.Model.user_info;
 import com.springboot.sohinalex.java.respository.UserRespository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -26,14 +27,16 @@ public class SecurityUserService implements ReactiveUserDetailsService {
 
             log.info("get user");
 
-        Mono<UserDetails> ans=  userRespository.findByyUsername(username)
-                      .switchIfEmpty(Mono.error(new RuntimeException())).map(
+        return userRespository.findByyUsername(username)
+                .doOnNext(System.out::println)
+                .switchIfEmpty(Mono.error(new RuntimeException()))
+                .map(
                       SecurityUser::new
               );
 
-        ans.doOnNext(System.out::println).subscribe();
 
-              return ans;
+
+
 
 
 
