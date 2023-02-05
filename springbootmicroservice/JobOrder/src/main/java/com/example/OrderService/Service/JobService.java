@@ -7,6 +7,7 @@ import com.example.OrderService.Repository.LocationRepository;
 import com.example.OrderService.dto.JobRequestDto;
 import com.example.OrderService.dto.NoticeRespond;
 import com.example.OrderService.dto.Response;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,14 +16,14 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
+@Slf4j
 @Service
 public class JobService {
     private static final Logger LOG = LoggerFactory.getLogger(JobService.class);
     @Autowired
     private JobRepository jobRepository;
 
-    @Autowired
-    private  WebClient webClient;
+
     @Autowired
     private LocationRepository locationRepository;
 
@@ -45,14 +46,18 @@ public class JobService {
         LOG.info("check the user can upload job post");
         Boolean result=webClientBuilder.baseUrl("http://USER").build().get()
                 .uri(uriBuilder -> uriBuilder
-                        .path("/Checkuser/{id}")//"http://localhost:8082/Checkuser/{id}")
-                        .build(252))
+                        .path("/User/Checkuser/{id}")//"http://localhost:8082/Checkuser/{id}")
+                        .build(user_id))
                         .retrieve()
                                 .bodyToMono(Boolean.class)
                                         .block(); //make syn request
 
-        if(Boolean.FALSE.equals(result)){
-           throw new IllegalAccessException("User score to low");
+        if(result!=true){
+          log.info("user score too low");
+            kafkaTemplate.send("notificationTopic",new NoticeRespond(
+                    user_id,"You cannot post job since your credit is too low"
+            ));
+           return null;
         }
         LOG.info("User can upload ");
         System.out.println("user passed");

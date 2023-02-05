@@ -23,6 +23,7 @@
     <module>User</module>
     <module>Notification</module>
     <module>euraka-server</module>
+    <module>api-gateway</module>
   </modules>
 
   <properties>

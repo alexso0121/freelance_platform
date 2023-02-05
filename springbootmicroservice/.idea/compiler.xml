@@ -7,6 +7,7 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="api-gateway" />
         <module name="User" />
         <module name="JobOrder" />
         <module name="Notification" />
@@ -19,6 +20,7 @@
       <module name="JobOrder" options="-parameters" />
       <module name="Notification" options="-parameters" />
       <module name="User" options="-parameters" />
+      <module name="api-gateway" options="-parameters" />
       <module name="euraka-server" options="-parameters" />
       <module name="springbootmicroservice" options="-parameters" />
     </option>

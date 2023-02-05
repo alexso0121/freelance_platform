@@ -20,7 +20,7 @@ public class User {
     @Id
     @GeneratedValue
     private int id;
-    private String name;
+    private String username;
     private String password;
     private String fullName;
     private String email;
@@ -29,6 +29,8 @@ public class User {
 
     private String contact;
     private String cv;
+
+    private String role;
 
     private double score=3.0;
 

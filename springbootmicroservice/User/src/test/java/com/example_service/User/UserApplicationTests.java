@@ -40,7 +40,7 @@ class UserApplicationTests {
 		User user=mockuser();
 		String request=objectMapper.writeValueAsString(user);
 
-		mockMvc.perform(MockMvcRequestBuilders.post("/adduser")
+		mockMvc.perform(MockMvcRequestBuilders.post("/User/adduser")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(request))
 				.andExpect(status().isCreated());
@@ -55,7 +55,7 @@ class UserApplicationTests {
 	void shouldGetUser() throws Exception {
 		//save the record first
 		userRespository.save(mockuser());
-		mockMvc.perform(MockMvcRequestBuilders.get("/user/{id}",1)
+		mockMvc.perform(MockMvcRequestBuilders.get("/User/user/{id}",1)
 				).andExpect(status().isFound())
 				.andExpect(jsonPath("$.name")
 						.value("alex"));
@@ -71,7 +71,7 @@ class UserApplicationTests {
 
 		String request=objectMapper.writeValueAsString(user);
 
-		MvcResult result=mockMvc.perform(MockMvcRequestBuilders.put("/updateuser")
+		MvcResult result=mockMvc.perform(MockMvcRequestBuilders.put("/User/updateuser")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(request))
 				.andExpect(status().is2xxSuccessful())
@@ -86,7 +86,7 @@ class UserApplicationTests {
 	void shouldDeleteUser() throws Exception {
 		userRespository.save(mockuser());
 
-		MvcResult result=mockMvc.perform(MockMvcRequestBuilders.delete("/deleteuser/{id}",1))
+		MvcResult result=mockMvc.perform(MockMvcRequestBuilders.delete("/User/deleteuser/{id}",1))
 				.andExpect(status().is2xxSuccessful())
 				.andReturn();
 

@@ -18,7 +18,7 @@ public class UserCrudservice {
     public AuthResponse signup(User user){
         AuthResponse res=new AuthResponse();
 
-         if(getUserbyName(user.getName())!=null){
+         if(getUserbyName(user.getUsername())!=null){
              res.setToken("the username has already been used");
              return res;
          }else if(userRespository.findUserbyEmail(user.getEmail())!=null){
@@ -37,7 +37,7 @@ public class UserCrudservice {
 
     public String updateUser(User user){
         User existinguser=userRespository.findById(user.getId()).orElseThrow(EmptyStackException::new);
-        if(!Objects.equals(existinguser.getName(), existinguser.getName()) &&getUserbyName(user.getName())!=null){
+        if(!Objects.equals(existinguser.getUsername(), existinguser.getUsername()) &&getUserbyName(user.getUsername())!=null){
             return "the username has already been used";
         }else if(!Objects.equals(existinguser.getEmail(), existinguser.getEmail()) &&userRespository.findUserbyEmail(user.getEmail())!=null){
             return "the email has already been registered";
@@ -49,7 +49,7 @@ public class UserCrudservice {
         existinguser.setFullName(user.getFullName());
         existinguser.setSkill_set((user.getSkill_set()));
         existinguser.setContact(user.getContact());
-        existinguser.setName(user.getName());
+        existinguser.setUsername(user.getUsername());
         userRespository.save(existinguser);
         return "Successful update";}
     }

@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@RequestMapping("/User")
 public class UserCrudContoller {
 
     private static final Logger LOG = LoggerFactory.getLogger(UserCrudContoller.class);
@@ -35,7 +36,7 @@ public class UserCrudContoller {
     @PostMapping("/adduser")
     @ResponseStatus(HttpStatus.CREATED)
     public AuthResponse signup(@RequestBody User user){
-        LOG.info("Token requested for user: '{}",user.getName());
+        LOG.info("Token requested for user: '{}",user.getUsername());
         return userCrudservice.signup(user);
     }
 
