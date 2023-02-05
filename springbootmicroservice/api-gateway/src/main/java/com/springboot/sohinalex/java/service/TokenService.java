@@ -49,7 +49,7 @@ public class TokenService {
 
         this.respository = respository;
     }
-    public String generateToken(Authentication user){
+    public String generateToken(Authentication user,int userid){
         log.info("generate token");
 
         Instant now=Instant.now();
@@ -67,7 +67,7 @@ public class TokenService {
                 .issuedAt(now)
                 .expiresAt(now.plus(2, ChronoUnit.HOURS))
                 .subject(user.getName())
-
+                .id(String.valueOf(userid))
                 .claim("scope",scope)
                 .claim("secret",secret)
 
@@ -78,7 +78,8 @@ public class TokenService {
     private Mono<Boolean> IsUsernameExist(String username){
         return respository.findByyUsername(username)
                 .doOnNext(res-> System.out.print(" afdasd"))
-                .doOnError(res->{log.info("good");
+                .doOnError(res->{
+                    log.info("good");
                     Mono.just(false);
                 })
                 .map(res->true
@@ -86,119 +87,72 @@ public class TokenService {
 
     }
 
+    /*public Mono<AuthResponse> converter(user_info user){
+        return signup(user)
+                .switchIfEmpty(Mono.error(Error::new))
+                .doOnNext(token -> respository.findByyUsername(user.getUsername())
+                        .switchIfEmpty(Mono.error(Error::new))
+                        .doOnNext(System.out::println)
+                        .map(
+                                userInfo -> new AuthResponse(userInfo.getId(),token)
+                        ))
+                .flatMap(token -> respository.findByyUsername(user.getUsername())
+                        .switchIfEmpty(Mono.error(Error::new))
+                        .doOnNext(System.out::println)
+                        .map(
+                        userInfo -> new AuthResponse(userInfo.getId(),token)
+                        )
+                );
+    }*/
 
 
-        public Mono<String> signup(user_info user)  {
+        public Mono<AuthResponse> signup(user_info user) {
 
             log.info("signup start");
-            return Mono.just(user).doOnNext(System.out::println)
-                    .switchIfEmpty(Mono.error(new RuntimeException()))
-                         .flatMap(Monouser->{
-                     Mono<Boolean> isuserexist=IsUsernameExist(Monouser.getUsername())
-                             .doOnNext(System.out::println)
-                             .switchIfEmpty(Mono.just(false))  //no user found => can register
-                             .mapNotNull(res-> res
-                             );
-                     Monouser.setPassword(  //encode the password
-                                     passwordEncoder.encode(user.getPassword()));
-                     Mono<user_info> savedusr = respository.save(
-                     Monouser).log();
+            // convert IsUserexist to boolean
 
-                            return isuserexist.doOnNext(System.out::println) //check the username exist in my db
-                                    .switchIfEmpty(Mono.error(new RuntimeException()))
+            Mono<Boolean> isuserexist=IsUsernameExist(user.getUsername())
+                    .doOnNext(System.out::println)
+                    .switchIfEmpty(Mono.just(false))  //no user found => can register
+                    .mapNotNull(res-> res
+                    );
+            return isuserexist
+                    .switchIfEmpty(Mono.error(new Error("cant check username exist")))
+                    .doOnNext(System.out::println)
+                    . flatMap(
+                    nameExist->{   //check username exist
+                        if(nameExist){
+                            log.info("repeated");
+                            return Mono.empty();
+                        } else
+                        {
+                            log.info("not repeat");
+                            user.setPassword(passwordEncoder.encode(user.getPassword()));    //encode the password
+                            return respository.save(user)
+                                    .switchIfEmpty(Mono.error(new Error("cant save user")))
+                                    .doOnNext(System.out::println)
                                     .flatMap(
-                                    res->{
-                                        log.info("start the map");
-                                        if(res){
-                                        log.info("error");
-                                        return null;
-                                    }
-                                    else {
-                                        savedusr.subscribe();  //execute the saving user
-                                        log.info("check");
-                                        return reactiveAuthenticationManager.authenticate(
+                                    savedUser->{
+                                        log.info("user saved with id: "+savedUser.getId());
+                                    return   reactiveAuthenticationManager.authenticate(
                                                 new UsernamePasswordAuthenticationToken(
                                                         user.getUsername(),user.getPassword()
                                                 )
-                                        ).map(this::generateToken)
-
-
-                                                ;
-                                    }
+                                        ). switchIfEmpty(Mono.error(new Error("cant auth")))
+                                            .doOnNext(System.out::println)
+                                            .flatMap(       //generate token
+                                                auth->{     //return id and token
+                                            String token=generateToken(auth,savedUser.getId());
+                                            log.info("token generated");
+                                            return Mono.just(new AuthResponse(savedUser.getId(), token));
+                                    });
                                     }
                             );
-
-                          });}
-
-               // return new AuthResponse(user_id.map(Integer::intValue),token.map(String::toString));
-
-
-
-
-
-
-       /*return webclient.baseUrl("http://USER").build().post()
-                .uri("/User/adduser")
-                .header(MediaType.APPLICATION_JSON_VALUE)
-                .body(Mono.just(
-                        new user_info(
-                                0, user.getUsername(),
-                                passwordEncoder.encode(user.getPassword()),
-                                        user.getFullName(),
-                                        user.getEmail(),
-                                        user.getSkill_set(),user.getContact(),user.getCv(),user.getAddress_id()
-                                ,user.getAddress(),null,3
-                                        )
-                ), user_info.class)
-                .retrieve()
-                .bodyToMono(user_info.class)
-                .map(result->{
-                    System.out.println(result);
-                    if(result.getId()!=0){
-                        Mono<Authentication> auth=reactiveAuthenticationManager.authenticate(
-                                new UsernamePasswordAuthenticationToken(result.getUsername()
-                                        ,result.getPassword())
-                        );
-                        log.info("successfully signup");
-                        if(auth.equals(Mono.empty())){
-                            return "invalid";
                         }
-                        //return generateToken(new Authentication() {
-                                             }
+                    }
+            );
 
-
-
-                    log.info("Sign up error");
-                    return "Invalid";
-
-                }
-                )
-                ;
-
-        //
-
-
-                 //make syn request
-
-
-       *//* int id=getId(saveduser.map(UserAuthdto::getId));*//*
-
-*/
-
-
-
-
-        /*public Integer getId(Mono<Integer> Monoint) throws Exception{
-            ByteArrayOutputStream baos=new ByteArrayOutputStream();
-            PrintStream ps=new PrintStream(baos);
-            PrintStream old=System.out;
-            System.setOut(ps);
-            System.out.println(Monoint);
-        Monoint.subscribe(System.out::println);
-        System.out.flush();
-        System.setOut(old);
-        return Integer.valueOf(baos.toString());
-        }*/
+        }
 
 
 
@@ -207,7 +161,7 @@ public class TokenService {
     }
 
 
-    public Mono<String> signin(Authentication auth) {
+    public Mono<AuthResponse> signin(Authentication auth) {
         //auth
         return respository.findByyUsername(auth.getName())
                 .doOnNext(user_info -> System.out.println(user_info.getPassword()))
@@ -216,8 +170,7 @@ public class TokenService {
                     if(passwordEncoder.matches(auth.getCredentials().toString(),
                             res.getPassword())){
                         log.info("Password Match");
-                        return
-                                generateToken(auth);
+                        return new AuthResponse(res.getId(),generateToken(auth,res.getId()));
                     }
                     else{
                         log.info("invalid password");

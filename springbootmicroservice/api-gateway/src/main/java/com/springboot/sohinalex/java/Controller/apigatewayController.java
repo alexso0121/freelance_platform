@@ -4,7 +4,8 @@ package com.springboot.sohinalex.java.Controller;
 import com.springboot.sohinalex.java.Model.user_info;
 import com.springboot.sohinalex.java.config.ReactiveAuthManger;
 import com.springboot.sohinalex.java.dto.AuthResponse;
-import com.springboot.sohinalex.java.dto.SignupDto;
+import com.springboot.sohinalex.java.dto.signupResponse;
+import com.springboot.sohinalex.java.respository.UserRespository;
 import com.springboot.sohinalex.java.service.TokenService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
@@ -21,11 +22,12 @@ import java.util.Map;
 @Slf4j
 public class apigatewayController  {
     private final TokenService tokenService;
-    private final ReactiveAuthManger reactiveAuthManger;
+    private final UserRespository userRespository;
 
-    public apigatewayController(TokenService tokenService, ReactiveAuthManger reactiveAuthManger) {
+    public apigatewayController(TokenService tokenService, UserRespository userRespository) {
         this.tokenService = tokenService;
-        this.reactiveAuthManger = reactiveAuthManger;
+        this.userRespository = userRespository;
+
     }
     @GetMapping("/decode/{token}")
     public Jwt decode(@PathVariable String token) throws Exception {
@@ -33,16 +35,36 @@ public class apigatewayController  {
     }
 
     @PostMapping("/signin")
-    public Mono<String> login(Authentication auth) {
+    public Mono<AuthResponse> login(Authentication auth) {
         log.info("start auth");
         return tokenService.signin(auth);
-    };
-
-
-    @PostMapping("/signup")
-    public Mono<String> signup(@RequestBody user_info user) throws Exception {
-       return tokenService.signup(user);
     }
+
+
+//    @PostMapping("/signup")
+//    public Mono<AuthResponse> signup(@RequestBody user_info user) {
+//        return tokenService.signup(user)
+//                .doOnNext(System.out::println)
+//                .switchIfEmpty(Mono.error(new Error("signup not work")))
+//                .flatMap(token->{
+//                    return userRespository.findByyUsername(user.getUsername())
+//                            .doOnNext(System.out::println)
+//                            .switchIfEmpty(Mono.error(new Error("finding fail")))
+//                            .flatMap(userInfo ->
+//                                    Mono.just(new AuthResponse(userInfo.getId(),token)));
+//                });
+//
+//
+//
+//     }
+@PostMapping("/signup")
+public Mono<AuthResponse> signup(@RequestBody user_info user) {
+    return tokenService.signup(user);
+
+
+
+}
+
 
     @GetMapping("/login/oauth2/code/google")
     public String loginWithGoogle(){

@@ -5,14 +5,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import reactor.core.publisher.Mono;
 
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
-public class AuthResponse {
-
-    private Integer user_id;
+public class signupResponse {
+    private Integer id;
     private String token;
-
-
-
 }
