@@ -2,9 +2,7 @@ package com.springboot.sohinalex.java.Controller;
 
 
 import com.springboot.sohinalex.java.Model.user_info;
-import com.springboot.sohinalex.java.config.ReactiveAuthManger;
 import com.springboot.sohinalex.java.dto.AuthResponse;
-import com.springboot.sohinalex.java.dto.signupResponse;
 import com.springboot.sohinalex.java.respository.UserRespository;
 import com.springboot.sohinalex.java.service.TokenService;
 import lombok.extern.slf4j.Slf4j;
@@ -41,22 +39,8 @@ public class apigatewayController  {
     }
 
 
-//    @PostMapping("/signup")
-//    public Mono<AuthResponse> signup(@RequestBody user_info user) {
-//        return tokenService.signup(user)
-//                .doOnNext(System.out::println)
-//                .switchIfEmpty(Mono.error(new Error("signup not work")))
-//                .flatMap(token->{
-//                    return userRespository.findByyUsername(user.getUsername())
-//                            .doOnNext(System.out::println)
-//                            .switchIfEmpty(Mono.error(new Error("finding fail")))
-//                            .flatMap(userInfo ->
-//                                    Mono.just(new AuthResponse(userInfo.getId(),token)));
-//                });
-//
-//
-//
-//     }
+
+
 @PostMapping("/signup")
 public Mono<AuthResponse> signup(@RequestBody user_info user) {
     return tokenService.signup(user);

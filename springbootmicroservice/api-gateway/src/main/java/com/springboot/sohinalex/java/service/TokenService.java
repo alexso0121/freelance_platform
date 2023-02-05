@@ -2,8 +2,11 @@ package com.springboot.sohinalex.java.service;
 
 import com.springboot.sohinalex.java.Model.user_info;
 import com.springboot.sohinalex.java.dto.AuthResponse;
+import com.springboot.sohinalex.java.dto.NoticeRespond;
 import com.springboot.sohinalex.java.respository.UserRespository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.ReactiveAuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -12,15 +15,15 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.reactive.function.server.ServerRequest;
-import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 import org.springframework.security.core.GrantedAuthority;
 
 
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.Objects;
+import java.util.Date;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,6 +33,10 @@ public class TokenService {
     private final JwtDecoder jwtDecoder;
 
     private final WebClient.Builder webclient;
+
+    @Autowired
+    private  KafkaTemplate<String, NoticeRespond> kafkaTemplate;
+
 
 
     private final PasswordEncoder passwordEncoder;
@@ -58,7 +65,6 @@ public class TokenService {
                 .collect(Collectors.joining(" "));
         String secret="AMDM:LM:LSMLdfsf";
 
-         Mono<user_info> MonoId =respository.findByyUsername(user.getName());
 
 
 
@@ -87,23 +93,6 @@ public class TokenService {
 
     }
 
-    /*public Mono<AuthResponse> converter(user_info user){
-        return signup(user)
-                .switchIfEmpty(Mono.error(Error::new))
-                .doOnNext(token -> respository.findByyUsername(user.getUsername())
-                        .switchIfEmpty(Mono.error(Error::new))
-                        .doOnNext(System.out::println)
-                        .map(
-                                userInfo -> new AuthResponse(userInfo.getId(),token)
-                        ))
-                .flatMap(token -> respository.findByyUsername(user.getUsername())
-                        .switchIfEmpty(Mono.error(Error::new))
-                        .doOnNext(System.out::println)
-                        .map(
-                        userInfo -> new AuthResponse(userInfo.getId(),token)
-                        )
-                );
-    }*/
 
 
         public Mono<AuthResponse> signup(user_info user) {
@@ -144,6 +133,14 @@ public class TokenService {
                                                 auth->{     //return id and token
                                             String token=generateToken(auth,savedUser.getId());
                                             log.info("token generated");
+                                                    //send signup notification
+                                                    LocalDateTime myDateObj = LocalDateTime.now();
+                                                    DateTimeFormatter myFormatObj = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+                                                    String formattedDate = myDateObj.format(myFormatObj);
+                                                    String notification="Welcome "+savedUser.getUsername()+"! You have signed up at "+formattedDate;
+                                                    kafkaTemplate.send("notificationTopic",new NoticeRespond(
+                                                            savedUser.getId(),notification
+                                                    ));
                                             return Mono.just(new AuthResponse(savedUser.getId(), token));
                                     });
                                     }
@@ -170,6 +167,16 @@ public class TokenService {
                     if(passwordEncoder.matches(auth.getCredentials().toString(),
                             res.getPassword())){
                         log.info("Password Match");
+
+                        //send signin notice
+                        LocalDateTime myDateObj = LocalDateTime.now();
+                        DateTimeFormatter myFormatObj = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+                        String formattedDate = myDateObj.format(myFormatObj);
+                        String notification="Welcome "+res.getUsername()+"! You have signed in at "+formattedDate;
+                        kafkaTemplate.send("notificationTopic",new NoticeRespond(
+                                res.getId(),notification
+                        ));
+
                         return new AuthResponse(res.getId(),generateToken(auth,res.getId()));
                     }
                     else{

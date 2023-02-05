@@ -33,4 +33,5 @@ public class NotificationApplication {
         notificationRepository.save(notification);
         return "userid: "+notification.getUser_id()+ " have one new notice ";
     }
+
 }
