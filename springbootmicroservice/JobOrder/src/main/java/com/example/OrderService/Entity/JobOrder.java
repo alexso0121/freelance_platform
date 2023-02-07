@@ -17,18 +17,17 @@ public class JobOrder {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int order_id;
-    private int sender_id;
+    private int user_id;
     private String Title;
     private String Description;
     private String Requirement;
     private Date date;
     private double salary;
-    private List<Integer> acceptor;
-
-    private int finalacceptord;
     private int address_id;
-
+    private boolean isaccepted=false;
+    private int application_number=1;
     private String region;
+
 
 
 }

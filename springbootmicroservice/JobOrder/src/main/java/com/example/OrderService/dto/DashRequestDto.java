@@ -7,8 +7,8 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class NoticeRespond {
-    private int user_id;
-    private String datetime;
-    private String notification;
+public class DashRequestDto {
+    private int order_id;
+    private int poster_id;
+    private int apply_id;
 }

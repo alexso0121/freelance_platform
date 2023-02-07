@@ -1,7 +1,10 @@
 package com.example.OrderService.Service;
 
 
+import com.example.OrderService.Entity.DashBroad;
 import com.example.OrderService.Entity.JobOrder;
+import com.example.OrderService.Entity.User;
+import com.example.OrderService.Repository.DashBroadRepository;
 import com.example.OrderService.Repository.JobRepository;
 import com.example.OrderService.Repository.LocationRepository;
 import com.example.OrderService.dto.JobRequestDto;
@@ -10,63 +13,74 @@ import com.example.OrderService.dto.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.client.WebClient;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
 public class JobService {
     private static final Logger LOG = LoggerFactory.getLogger(JobService.class);
-    @Autowired
-    private JobRepository jobRepository;
+
+    private final JobRepository jobRepository;
 
 
-    @Autowired
-    private LocationRepository locationRepository;
 
-    @Autowired
-    private  KafkaTemplate<String, NoticeRespond> kafkaTemplate;
+    private final DashBroadRepository dashBroadRepository;
 
-    @Autowired
-    private WebClient.Builder webClientBuilder;
 
+    private final LocationRepository locationRepository;
+    private final UserCoreService userCoreService;
+
+
+    private final KafkaTemplate<String, NoticeRespond> kafkaTemplate;
+
+
+
+    public JobService(JobRepository jobRepository, DashBroadRepository dashBroadRepository, LocationRepository locationRepository, @Lazy UserCoreService userCoreService, KafkaTemplate<String, NoticeRespond> kafkaTemplate) {
+        this.jobRepository = jobRepository;
+        this.dashBroadRepository = dashBroadRepository;
+        this.locationRepository = locationRepository;
+        this.userCoreService = userCoreService;
+        this.kafkaTemplate = kafkaTemplate;
+
+    }
 
 
     public Response postJob(JobOrder jobOrder) throws IllegalAccessException {
         JobOrder oldJob=jobRepository.findByTitle(jobOrder.getTitle());
-        int user_id=jobOrder.getSender_id();
+        int user_id=jobOrder.getUser_id();
         if(oldJob!=null){
             return null;
         }
         //call user service check the score of user
         //change the localhost:8082 to name in eureke
         LOG.info("check the user can upload job post");
-        Boolean result=webClientBuilder.baseUrl("http://USER").build().get()
-                .uri(uriBuilder -> uriBuilder
-                        .path("/User/Checkuser/{id}")//"http://localhost:8082/Checkuser/{id}")
-                        .build(user_id))
-                        .retrieve()
-                                .bodyToMono(Boolean.class)
-                                        .block(); //make syn request
-
-        if(result!=true){
+        Boolean result=userCoreService.VerifyCanOrder(user_id);
+        if(!result){
           log.info("user score too low");
             kafkaTemplate.send("notificationTopic",new NoticeRespond(
-                    user_id,"You cannot post job since your credit is too low"
+                    user_id,"Job","You cannot post job since your credit is too low"
             ));
            return null;
         }
+
         LOG.info("User can upload ");
         System.out.println("user passed");
         jobOrder.setRegion(getLocation(jobOrder.getAddress_id()));
         JobOrder job=jobRepository.save(jobOrder);
 
+        //build a row of relationship in dashBroad
+        dashBroadRepository.save(new DashBroad(
+                0,job.getOrder_id(),user_id, job.getApplication_number(), null,null));
+        log.info("new dashboad is built");
+
         String notification="The Job with order id (" +job.getOrder_id()+") has successfully posted !";
         kafkaTemplate.send("notificationTopic",new NoticeRespond(
-                user_id,notification
+                user_id,"Job",notification
         ));
         return GetSingleJob(job.getOrder_id());
     }
@@ -76,6 +90,9 @@ public class JobService {
         return jobRepository.singlejob(order_id);
 
 
+    }
+    public JobOrder findByOrderid(int id){
+        return jobRepository.findById(id).orElse(null);
     }
 
 
@@ -95,6 +112,35 @@ public class JobService {
     private String getLocation(int address_id){
         return locationRepository.getLocation(address_id);
     }
+
+    public List<Response> showApplications(int id) {
+        User user=userCoreService.findById(id);
+        if(user==null){
+            log.error("user not found");
+            return null;
+        }
+        return user.getApplications().stream()
+                .map(res->GetSingleJob(res.getOrder_id()))
+                .collect(Collectors.toList());
+
+    }
+    //add application
+    public Boolean postApplication(int user_id,int order_id){
+        try{
+            JobOrder job=findByOrderid(order_id);
+            User user=userCoreService.findById(user_id);
+            user.getApplications().add(job);
+            System.out.println(job);
+            userCoreService.saveAndReturn(user);
+            log.info("add application");
+            return true;
+        }catch (IndexOutOfBoundsException exception){
+            return false;
+        }
+
+    }
+
+
 
 
 

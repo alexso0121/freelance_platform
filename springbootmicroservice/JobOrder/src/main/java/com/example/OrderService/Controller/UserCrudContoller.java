@@ -1,11 +1,10 @@
-package com.example_service.User.Controller;
+package com.example.OrderService.Controller;
 
-import com.example_service.User.Model.User;
-import com.example_service.User.Repository.UserRespository;
-import com.example_service.User.Service.UserCoreService;
-import com.example_service.User.Service.UserCrudservice;
-import com.example_service.User.dto.AuthResponse;
-import com.example_service.User.dto.InfoResponse;
+
+import com.example.OrderService.Entity.User;
+import com.example.OrderService.Repository.UserRepository;
+import com.example.OrderService.Service.UserCrudservice;
+import com.example.OrderService.dto.AuthResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +22,7 @@ public class UserCrudContoller {
 
 
     @Autowired
-    private UserRespository userRespository;
+    private UserRepository userRespository;
 
     @GetMapping("/user/{id}")
     @ResponseStatus(HttpStatus.FOUND)
@@ -44,11 +43,7 @@ public class UserCrudContoller {
 
 
     //the user id  be  set in frontend
-    @PutMapping("/updateuser")
-    public String UpdateUser (@RequestBody User user){
-        LOG.info("Updated user: '{}",user.getId());
-        return userCrudservice.updateUser(user);
-    }
+
 
     @DeleteMapping("/deleteuser/{id}")
     public String deleteUser(@PathVariable int id){

@@ -3,7 +3,7 @@ package com.springboot.sohinalex.java.Controller;
 
 import com.springboot.sohinalex.java.Model.user_info;
 import com.springboot.sohinalex.java.dto.AuthResponse;
-import com.springboot.sohinalex.java.respository.UserRespository;
+
 import com.springboot.sohinalex.java.service.TokenService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
@@ -20,11 +20,11 @@ import java.util.Map;
 @Slf4j
 public class apigatewayController  {
     private final TokenService tokenService;
-    private final UserRespository userRespository;
 
-    public apigatewayController(TokenService tokenService, UserRespository userRespository) {
+
+    public apigatewayController(TokenService tokenService) {
         this.tokenService = tokenService;
-        this.userRespository = userRespository;
+
 
     }
     @GetMapping("/decode/{token}")

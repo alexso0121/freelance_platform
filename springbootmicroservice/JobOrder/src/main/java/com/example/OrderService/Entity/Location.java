@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 public class Location {
     @Id
     @GeneratedValue
-    private int id;
+    private int addr_id;
     private int address_id;
     private String region;
 

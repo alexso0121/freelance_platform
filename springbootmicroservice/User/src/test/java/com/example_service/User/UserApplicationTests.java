@@ -1,7 +1,6 @@
 package com.example_service.User;
 
 import com.example_service.User.Model.User;
-import com.example_service.User.Repository.UserRespository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

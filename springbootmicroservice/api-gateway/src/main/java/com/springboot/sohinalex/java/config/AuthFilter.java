@@ -1,19 +1,13 @@
 package com.springboot.sohinalex.java.config;
 
-import com.springboot.sohinalex.java.Model.user_info;
-import com.springboot.sohinalex.java.respository.UserRespository;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpHeaders;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
-import org.springframework.cloud.gateway.filter.GatewayFilterChain;
-import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.stereotype.Component;
-import org.springframework.web.server.ServerWebExchange;
-import reactor.core.publisher.Mono;
 
 import java.util.Objects;
 
@@ -25,8 +19,7 @@ public class AuthFilter extends AbstractGatewayFilterFactory<AuthFilter.Config> 
 
     @Autowired
     private JwtDecoder jwtDecoder;
-    @Autowired
-    private UserRespository userRespository;
+
 
 
 
@@ -66,7 +59,9 @@ public class AuthFilter extends AbstractGatewayFilterFactory<AuthFilter.Config> 
                 }
 
                 //add headers with userid(for verification)
-                exchange.getRequest().getHeaders().add("id",jwt.getId() );
+
+               // exchange.getRequest().getHeaders().add("id",jwt.getId() );
+                log.info("user id is added to the header");
 
 
             return chain.filter(exchange);

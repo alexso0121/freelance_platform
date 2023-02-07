@@ -1,11 +1,9 @@
 package com.springboot.sohinalex.java.Model;
 
 
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.Id;
 
 @Data
 @AllArgsConstructor
@@ -13,7 +11,7 @@ import org.springframework.data.annotation.Id;
 
 public class user_info {
 
-    @Id
+
     private int id;
     private String username;
     private String password;

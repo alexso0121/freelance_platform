@@ -1,20 +1,20 @@
-package com.example_service.User.Model;
+package com.example.OrderService.Entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.Value;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "user_info")
+@Table(name="user_info")
 public class User {
 
     @Id
@@ -35,6 +35,9 @@ public class User {
     private double score=3.0;
 
     private int Address_id;
+    @OneToMany(targetEntity = JobOrder.class,cascade = CascadeType.ALL)
+    @JoinColumn(name="UserJob_fk",referencedColumnName = "id")
+    private List<JobOrder> applications=new ArrayList<>(20); //Application that User_applied
 
 
 }

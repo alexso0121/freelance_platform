@@ -3,27 +3,26 @@ package com.springboot.sohinalex.java.service;
 import com.springboot.sohinalex.java.Model.user_info;
 import com.springboot.sohinalex.java.dto.AuthResponse;
 import com.springboot.sohinalex.java.dto.NoticeRespond;
-import com.springboot.sohinalex.java.respository.UserRespository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.ReactiveAuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
-import org.springframework.security.core.GrantedAuthority;
-
 
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.Date;
 import java.util.stream.Collectors;
 
 @Service
@@ -43,18 +42,19 @@ public class TokenService {
 
     private final ReactiveAuthenticationManager reactiveAuthenticationManager;
 
-    private final UserRespository respository;
+
+    private final WebClient.Builder webClientBuilder;
 
 
 
-    public TokenService(JwtEncoder jwtEncoder, JwtDecoder jwtDecoder, WebClient.Builder webclient, PasswordEncoder passwordEncoder, ReactiveAuthenticationManager reactiveAuthenticationManager, UserRespository respository) {
+    public TokenService(JwtEncoder jwtEncoder, JwtDecoder jwtDecoder, WebClient.Builder webclient, PasswordEncoder passwordEncoder, ReactiveAuthenticationManager reactiveAuthenticationManager, WebClient.Builder webClientBuilder) {
         this.jwtEncoder = jwtEncoder;
         this.jwtDecoder = jwtDecoder;
         this.webclient = webclient;
         this.passwordEncoder = passwordEncoder;
         this.reactiveAuthenticationManager = reactiveAuthenticationManager;
 
-        this.respository = respository;
+        this.webClientBuilder = webClientBuilder;
     }
     public String generateToken(Authentication user,int userid){
         log.info("generate token");
@@ -82,7 +82,12 @@ public class TokenService {
 
     }
     private Mono<Boolean> IsUsernameExist(String username){
-        return respository.findByyUsername(username)
+        return webClientBuilder.baseUrl("http://USERJOB").build().get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("UserJob/get/Byusername/{username}")//"http://localhost:8082/Checkuser/{id}")
+                        .build(username))
+                .retrieve()
+                .bodyToMono(user_info.class)
                 .doOnNext(res-> System.out.print(" afdasd"))
                 .doOnError(res->{
                     log.info("good");
@@ -117,7 +122,13 @@ public class TokenService {
                         {
                             log.info("not repeat");
                             user.setPassword(passwordEncoder.encode(user.getPassword()));    //encode the password
-                            return respository.save(user)
+                            return webClientBuilder.baseUrl("http://USERJOB").build().post()
+                                    .uri("UserJob/add/user")
+                                    .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                                    .body(Mono.just(user), user_info.class)
+
+                                    .retrieve()
+                                    .bodyToMono(user_info.class)       //  /add/user
                                     .switchIfEmpty(Mono.error(new Error("cant save user")))
                                     .doOnNext(System.out::println)
                                     .flatMap(
@@ -139,7 +150,7 @@ public class TokenService {
                                                     String formattedDate = myDateObj.format(myFormatObj);
                                                     String notification="Welcome "+savedUser.getUsername()+"! You have signed up at "+formattedDate;
                                                     kafkaTemplate.send("notificationTopic",new NoticeRespond(
-                                                            savedUser.getId(),notification
+                                                            savedUser.getId(),formattedDate,notification
                                                     ));
                                             return Mono.just(new AuthResponse(savedUser.getId(), token));
                                     });
@@ -160,7 +171,12 @@ public class TokenService {
 
     public Mono<AuthResponse> signin(Authentication auth) {
         //auth
-        return respository.findByyUsername(auth.getName())
+        return webClientBuilder.baseUrl("http://USERJOB").build().get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/UserJob/get/Byusername/{username}")//"http://localhost:8082/Checkuser/{id}")
+                        .build(auth.getName()))
+                .retrieve()
+                .bodyToMono(user_info.class)
                 .doOnNext(user_info -> System.out.println(user_info.getPassword()))
                 .switchIfEmpty(Mono.error(new BadCredentialsException("Username not found") ))
                 .map(res->{
@@ -174,7 +190,7 @@ public class TokenService {
                         String formattedDate = myDateObj.format(myFormatObj);
                         String notification="Welcome "+res.getUsername()+"! You have signed in at "+formattedDate;
                         kafkaTemplate.send("notificationTopic",new NoticeRespond(
-                                res.getId(),notification
+                                res.getId(),formattedDate,notification
                         ));
 
                         return new AuthResponse(res.getId(),generateToken(auth,res.getId()));

@@ -17,14 +17,14 @@ import reactor.core.scheduler.Schedulers;
 @Configuration
 @Slf4j
 public class ReactiveAuthManger implements ReactiveAuthenticationManager {
-    private final SecurityUserService securityUserService;
+   /* private final SecurityUserService securityUserService;
     private final PasswordEncoder passwordEncoder;
 
     public ReactiveAuthManger(SecurityUserService securityUserService, PasswordEncoder passwordEncoder) {
         this.securityUserService = securityUserService;
         this.passwordEncoder = passwordEncoder;
 
-    }
+    }*/
 //'$2a$10$71w.QlPp9NHGaJ7Q1tySO./agg5BaQc6l6lZHV.S.c5zgewSby3da'
 
 
@@ -38,13 +38,14 @@ public class ReactiveAuthManger implements ReactiveAuthenticationManager {
                 .map(UserDetails::getPassword);*/
 
         return Mono.just(authentication);
-                /*.doOnNext(authentication1 -> System.out.println("start"))
+               /* .doOnNext(authentication1 -> System.out.println("start"))
                 .switchIfEmpty(Mono.error(new RuntimeException()))
                     .map(auth->{
                         System.out.println(passwordEncoder.encode(auth.getCredentials().toString()));
                         //if(Mono.just(passwordEncoder.matches(auth.getCredentials().toString(),password.doOnNext(System.out::println).subscribe()))){
 
-                                password.map(
+                                password.switchIfEmpty(Mono.error(new BadCredentialsException("no user found")))
+                                        .map(
                                 res -> {
                             log.info("STart match");
                             if(passwordEncoder.matches(auth.getCredentials().toString(), res)){

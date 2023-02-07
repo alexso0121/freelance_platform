@@ -2,12 +2,11 @@ package com.springboot.sohinalex.java.service;
 
 import com.springboot.sohinalex.java.Model.SecurityUser;
 import com.springboot.sohinalex.java.Model.user_info;
-import com.springboot.sohinalex.java.respository.UserRespository;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 @Service
@@ -15,10 +14,12 @@ import reactor.core.publisher.Mono;
 public class SecurityUserService implements ReactiveUserDetailsService {
 
 
-    private final UserRespository userRespository;
 
-    public SecurityUserService(UserRespository userRespository) {
-        this.userRespository = userRespository;
+    private final WebClient.Builder webClientBuilder;
+
+    public SecurityUserService(WebClient.Builder webClientBuilder) {
+
+        this.webClientBuilder = webClientBuilder;
     }
 
 
@@ -27,14 +28,18 @@ public class SecurityUserService implements ReactiveUserDetailsService {
 
             log.info("get user");
 
-        return userRespository.findByyUsername(username)
+        //return userRespository.findByyUsername(username)
+        return  webClientBuilder.baseUrl("http://USERJOB").build().get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/UserJob/get/Byusername/{username}")//"http://localhost:8082/Checkuser/{id}")
+                        .build(username))
+                .retrieve()
+                .bodyToMono(user_info.class)
                 .doOnNext(System.out::println)
                 .switchIfEmpty(Mono.error(new RuntimeException()))
                 .map(
                       SecurityUser::new
               );
-
-
 
 
 
