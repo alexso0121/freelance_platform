@@ -20,6 +20,7 @@ public class NotificationController {
 
     @GetMapping("/getNotice/{user_id}")
     public List<NoticeRespond> getNoticeByUser(@PathVariable int user_id){
+
         return notificationRepository.FindNoticeByUser_id(user_id);
     }
 }

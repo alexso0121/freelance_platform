@@ -8,17 +8,23 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="api-gateway" />
-        <module name="User" />
         <module name="JobOrder" />
         <module name="Notification" />
+        <module name="Chatroom" />
         <module name="euraka-server" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="SimpleChatroom" target="16" />
+      <module name="User" target="16" />
+    </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="Chatroom" options="-parameters" />
       <module name="JobOrder" options="-parameters" />
       <module name="Notification" options="-parameters" />
+      <module name="SimpleChatroom" options="-parameters" />
       <module name="User" options="-parameters" />
       <module name="api-gateway" options="-parameters" />
       <module name="euraka-server" options="-parameters" />

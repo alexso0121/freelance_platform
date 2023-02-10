@@ -9,6 +9,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class NoticeRespond {
     private int user_id;
-    private String category;    //three categories: Auth,Job,Dashboard
+    private String datetime;
     private String notification;
 }

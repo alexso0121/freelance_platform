@@ -20,10 +20,11 @@
   <url>http://www.example.com</url>
   <modules>
     <module>JobOrder</module>
-    <module>User</module>
     <module>Notification</module>
     <module>euraka-server</module>
     <module>api-gateway</module>
+    <module>Chatroom</module>
+
   </modules>
 
   <properties>
