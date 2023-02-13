@@ -5,11 +5,17 @@ import com.example.OrderService.Entity.JobOrder;
 import com.example.OrderService.Entity.User;
 import com.example.OrderService.Repository.DashBroadRepository;
 import com.example.OrderService.Repository.JobRepository;
+import com.example.OrderService.dto.ChatMessage;
 import com.example.OrderService.dto.InfoResponse;
 import com.example.OrderService.dto.NoticeRespond;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
+
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -28,14 +34,20 @@ public class DashbroadService {
     private final KafkaTemplate<String, NoticeRespond> kafkaTemplate;
 
     private final JobService jobService;
+    private final WebClient.Builder webclient;
 
-    public DashbroadService(DashBroadRepository dashBroadRepository, JobRepository jobRepository, UserCoreService userCoreService, KafkaTemplate<String, NoticeRespond> kafkaTemplate, JobService jobService) {
+    private final kafkaProducer kafkaProducer;
+
+
+    public DashbroadService(DashBroadRepository dashBroadRepository, JobRepository jobRepository, UserCoreService userCoreService, KafkaTemplate<String, NoticeRespond> kafkaTemplate, JobService jobService, WebClient.Builder webclient, com.example.OrderService.Service.kafkaProducer kafkaProducer) {
         this.dashBroadRepository = dashBroadRepository;
 
         this.jobRepository = jobRepository;
         this.userCoreService = userCoreService;
         this.kafkaTemplate = kafkaTemplate;
         this.jobService = jobService;
+        this.webclient = webclient;
+        this.kafkaProducer = kafkaProducer;
     }
 
 
@@ -45,9 +57,6 @@ public class DashbroadService {
 
         DashBroad dashBroad=dashBroadRepository.findByOrder_id(order_id);
         try{
-            if(dashBroad.getAccepted_id().size()!=0){  //to much applications
-                return "the order has already been accepted";
-            }
             if(dashBroad.getApplier_id().contains(userCoreService.findById(apply_id))){
                 return "you have already applied the job";
             }
@@ -56,29 +65,48 @@ public class DashbroadService {
         dashBroadRepository.save(dashBroad);
 
             //add in applications records in user entity
-            Boolean isSuccess=jobService.postApplication(apply_id,order_id);
-            if(!isSuccess){
-                LocalDateTime myDateObj = LocalDateTime.now();
-                DateTimeFormatter myFormatObj = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
-                String formattedDate = myDateObj.format(myFormatObj);
-                String notification="You have already send to much of applications.Please delete some and try again:"+order_id;
-                kafkaTemplate.send("notificationTopic",new NoticeRespond(
-                        apply_id,formattedDate,notification
-                ));
-                return null;
-            }
-
+            postApplication(apply_id,order_id);
 
             //send notification
             String notification="You have successfully applied for job id:"+order_id;
-            kafkaTemplate.send("notificationTopic",new NoticeRespond(
-                    apply_id,"DashBroad",notification
-            ));
-            log.info(apply_id+"has applied job with id: "+order_id);
+            kafkaProducer.sendNotice(notification,apply_id,order_id);
 
         return "successfully added";
         } catch(IndexOutOfBoundsException exception){
             return "the number of application exceed the limit";
+        }
+    }
+
+    /*public Boolean sendNotice(String notification,int apply_id,int order_id){
+        try{
+            LocalDateTime myDateObj = LocalDateTime.now();
+        DateTimeFormatter myFormatObj = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+        String formattedDate = myDateObj.format(myFormatObj);
+        kafkaTemplate.send("notificationTopic",new NoticeRespond(
+                apply_id,formattedDate,notification
+        ));
+        log.info(apply_id+"has applied job with id: "+order_id);
+        return true;
+        }
+        catch (Exception exception){
+            log.error("cant found the consumer");
+            return false;
+        }
+    }*/
+
+    public void postApplication(int apply_id,int order_id){
+        try{
+            JobOrder job=jobService.findByOrderid(order_id);
+            User user=userCoreService.findById(apply_id);
+            user.getApplications().add(job);
+            System.out.println(job);
+            userCoreService.saveAndReturn(user);
+            log.info("add application");
+
+        }catch (IndexOutOfBoundsException exception){
+            String notification="You have already send to much of applications.Please delete some and try again:"+order_id;
+            kafkaProducer.sendNotice(notification,apply_id,order_id);
+
         }
 
     }
@@ -109,13 +137,12 @@ public class DashbroadService {
             log.error("no requested id found");
             return null;
         }
-      /*  if(dashBroad.getPoster_id()!=posterId){
-            log.error("only poster can read the application detail");
-            return null;
-        }*/
+
         InfoResponse acceptedProfile=userCoreService.getProfile(applyId);
         User user=userCoreService.getUser(applyId);
         if (acceptedProfile==null||!dashBroad.getApplier_id().contains(user)){
+            System.out.println(dashBroad.getApplier_id());
+            System.out.println(dashBroad.getApplier_id().contains(user));
             log.error("no application with user_id found");
             return null;
         }
@@ -125,35 +152,71 @@ public class DashbroadService {
         dashBroad.getAccepted_id().add(userCoreService.getUser(applyId));
         dashBroad.setAccepted_id(dashBroad.getAccepted_id());
         dashBroad.setApplication_remain(dashBroad.getApplication_remain()-1);
-        DashBroad saved=dashBroadRepository.save(dashBroad);
+        dashBroadRepository.save(dashBroad);
 
         JobOrder jobOrder=jobRepository.findById(orderId).orElse(null);
         //update the joborder
-        if(saved.getApplication_remain()==0){
+        if(dashBroad.getApplication_remain()==0){
             assert jobOrder != null;
             jobOrder.setIsaccepted(true);
             jobRepository.save(jobOrder);
         }
 
         //send notice
+
         LocalDateTime myDateObj = LocalDateTime.now();
         DateTimeFormatter myFormatObj = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
         String formattedDate = myDateObj.format(myFormatObj);
         String posterNotice="You have successfully accepted "+acceptedProfile.getUsername()+"'s application for job id:"+orderId
                 +" at "+formattedDate;
-        kafkaTemplate.send("notificationTopic",new NoticeRespond(
+        kafkaProducer.sendNotice(posterNotice,applyId,orderId);
+        /*kafkaTemplate.send("notificationTopic",new NoticeRespond(
                 posterId,formattedDate,posterNotice
-        ));
+        ));*/
 
         String ApplyNotice="Your application for Job with title '"+jobOrder.getTitle()+"' has been accepted" +
                 " at"+formattedDate;
-        kafkaTemplate.send("notificationTopic",new NoticeRespond(
+        kafkaProducer.sendNotice(ApplyNotice,applyId,orderId);
+
+       /* kafkaTemplate.send("notificationTopic",new NoticeRespond(
                 posterId,formattedDate,ApplyNotice
-        ));
+        ));*/
+        //build a chatroom=>send chat
+
+        log.info("Start sending chat");
+        int sizeOfRoom=dashBroad.getAccepted_id().size();
+        System.out.println(sizeOfRoom);
+        String username=userCoreService.findById(posterId).getUsername();
+        System.out.println("sizeOfRoom: "+sizeOfRoom);
+        if(sizeOfRoom==1){ //no room found=> build room
+            ChatMessage buildmessage=new ChatMessage(null,orderId, ChatMessage.MessageType.BUILD,
+                    username+" has built the room",username,null);
+            generateChat(buildmessage);
+
+        }
+        ChatMessage Joinmessage=new ChatMessage(null,orderId, ChatMessage.MessageType.JOIN,
+                acceptedProfile.getUsername()+" has join the room",
+                acceptedProfile.getUsername(),null);
+        generateChat(Joinmessage);
 
         return acceptedProfile;
 
     }
+
+    public void generateChat(ChatMessage buildmessage) {
+        webclient.baseUrl("http://CHATROOM").build()
+                .post().uri("/Chat/chat/post")
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .body(Mono.just(buildmessage), ChatMessage.class)
+                .retrieve()
+                .bodyToMono(ChatMessage.class)
+                .doOnNext(System.out::println)
+                .block();
+
+
+    }
+
+
 
 
     public String deleteApplication(int orderId, int applyId) {

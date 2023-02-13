@@ -42,6 +42,16 @@
             <artifactId>spring-cloud-starter-loadbalancer</artifactId>
             <version>4.0.0</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/junit/junit -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.13.2</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/com.jayway.jsonpath/json-path-web-test -->
+
+
         <!--remember is spring-cloud-"starter"-->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
@@ -58,6 +68,14 @@
             <artifactId>jaxb-api</artifactId>
             <version>2.3.0</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/org.springframework.kafka/spring-kafka-test -->
+        <dependency>
+            <groupId>org.springframework.kafka</groupId>
+            <artifactId>spring-kafka-test</artifactId>
+            <version>3.0.2</version>
+            <scope>test</scope>
+        </dependency>
+
 
 
         <dependency>
@@ -76,7 +94,7 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
-            <version>3.0.1</version>
+            <version>3.0.2</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.mapstruct/mapstruct -->
         <dependency>
@@ -84,6 +102,7 @@
             <artifactId>mapstruct</artifactId>
             <version>1.5.3.Final</version>
         </dependency>
+
 
 
     </dependencies>

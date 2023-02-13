@@ -125,20 +125,7 @@ public class JobService {
 
     }
     //add application
-    public Boolean postApplication(int user_id,int order_id){
-        try{
-            JobOrder job=findByOrderid(order_id);
-            User user=userCoreService.findById(user_id);
-            user.getApplications().add(job);
-            System.out.println(job);
-            userCoreService.saveAndReturn(user);
-            log.info("add application");
-            return true;
-        }catch (IndexOutOfBoundsException exception){
-            return false;
-        }
 
-    }
 
 
 

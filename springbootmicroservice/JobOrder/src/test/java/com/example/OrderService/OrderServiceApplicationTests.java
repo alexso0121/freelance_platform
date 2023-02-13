@@ -39,7 +39,7 @@ class OrderServiceApplicationTests {
 	}
 
 	//@Sql("INSERT INTO user_info(name) VALUES \"alex\" ")
-	//@Test
+	@Test
 	void shouldCreatePost() throws Exception {
 		JobOrder job=jobRepository.save(createjob());
 		String request=objectMapper.writeValueAsString(job);

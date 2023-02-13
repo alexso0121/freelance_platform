@@ -4,12 +4,9 @@ package com.example.OrderService.Service;
 import com.example.OrderService.Entity.User;
 import com.example.OrderService.Repository.UserRepository;
 import com.example.OrderService.dto.InfoResponse;
-import com.example.OrderService.dto.UserAuthdto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
 
-import java.util.EmptyStackException;
 import java.util.Objects;
 
 @Service
@@ -33,28 +30,17 @@ public class UserCoreService {
 
     };
 
-    public UserAuthdto getSecurityUser(String username){
-        User existuser=userRespository.findUserbyName(username);
-        if(existuser==null){
-            return null;
-        }
-        return new UserAuthdto(existuser.getId()
-                , existuser.getUsername()
-                , existuser.getPassword()
-                , existuser.getRole()) ;
 
-            
-    }
-    public InfoResponse getProfile(@PathVariable int id){
+    public InfoResponse getProfile( int id){
         return UserToDTO(userRespository
                         .findById(id).orElse(null));
 
     }
     public String updateUser(User user){
-        User existinguser=userRespository.findById(user.getId()).orElseThrow(EmptyStackException::new);
-        if(!Objects.equals(existinguser.getUsername(), existinguser.getUsername()) &&findByUsername(user.getUsername())!=null){
+        User existinguser=userRespository.findById(user.getId()).orElseThrow(Error::new);
+        if(!Objects.equals(user.getUsername(), existinguser.getUsername()) &&findByUsername(user.getUsername())!=null){
             return "the username has already been used";
-        }else if(!Objects.equals(existinguser.getEmail(), existinguser.getEmail()) &&userRespository.findUserbyEmail(user.getEmail())!=null){
+        }else if(!Objects.equals(user.getEmail(), existinguser.getEmail()) &&userRespository.findUserbyEmail(user.getEmail())!=null){
             return "the email has already been registered";
         }else{
             existinguser.setCv(user.getCv());
@@ -65,14 +51,16 @@ public class UserCoreService {
             existinguser.setSkill_set((user.getSkill_set()));
             existinguser.setContact(user.getContact());
             existinguser.setUsername(user.getUsername());
-            userRespository.save(existinguser);
+             saveAndReturn(existinguser);
             return "Successful update";}
     }
+
 
     public User getUser(int id){
         return userRespository.findById(id).orElse(null);
     }
     private InfoResponse UserToDTO(User user){
+        if(user==null){return null;}
         InfoResponse respond=new InfoResponse();
         respond.setId(user.getId());
         respond.setUsername(user.getUsername());
@@ -100,6 +88,9 @@ public class UserCoreService {
     }
     //update application list in user
 
-
+    public String Delete(int id){
+        userRespository.deleteById(id);
+        return "User with id "+id +"is removed";
+    }
 
 }

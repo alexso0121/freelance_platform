@@ -6,7 +6,6 @@ import com.example.OrderService.Service.JobService;
 import com.example.OrderService.Service.UserCoreService;
 import com.example.OrderService.dto.InfoResponse;
 import com.example.OrderService.dto.Response;
-import com.example.OrderService.dto.UserAuthdto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
@@ -48,10 +47,7 @@ public class UserCoreController {
         return userCoreservice.updateUser(user);
     }
 
-    @GetMapping("/authUser/{username}")
-    public UserAuthdto getSecurityUser(@PathVariable String username){
-        return userCoreservice.getSecurityUser(username);
-    }
+
     @GetMapping("/application/history/{id}")
     public List<Response> showApplicationshistory(@PathVariable int id){
         return jobService.showApplications(id);
@@ -67,7 +63,11 @@ public class UserCoreController {
         return userCoreservice.saveAndReturn(user);
     }
 
-
+    @DeleteMapping("/deleteuser/{id}")
+    public String deleteUser(@PathVariable int id){
+        log.info("Deleted user id: '{}",id);
+        return userCoreservice.Delete(id);
+    }
 
 
 

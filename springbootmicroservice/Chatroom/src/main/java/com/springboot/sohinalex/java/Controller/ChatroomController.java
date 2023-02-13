@@ -38,6 +38,12 @@ public class ChatroomController {
     public Flux<ChatMessage> getChatRecords(@RequestParam String order_id){
         return chatroomService.getChatRecords(Integer.parseInt(order_id));
     }
+    @GetMapping("/chat/isempty/{order_id}")
+    public Flux<ChatMessage> IsEmpty(@PathVariable int order_id){
+        return chatroomService.getChatRecords(order_id)
+                .take(1);
+
+    }
 
    /* @MessageMapping("/chat/{roomId}/buildroom")*/
     /*public ChatMessage buildRoom(@DestinationVariable String roomId, @Payload ChatMessage chatMessage){

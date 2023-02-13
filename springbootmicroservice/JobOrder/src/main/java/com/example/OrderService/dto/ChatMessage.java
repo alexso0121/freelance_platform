@@ -1,16 +1,13 @@
-package com.springboot.sohinalex.java.Entity;
+package com.example.OrderService.dto;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
 
 @Data
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class ChatMessage {
