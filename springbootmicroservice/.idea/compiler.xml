@@ -8,9 +8,9 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="api-gateway" />
-        <module name="JobOrder" />
-        <module name="Notification" />
-        <module name="Chatroom" />
+        <module name="userjob" />
+        <module name="notification" />
+        <module name="chatroom" />
         <module name="euraka-server" />
       </profile>
     </annotationProcessing>
@@ -21,14 +21,14 @@
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
-      <module name="Chatroom" options="-parameters" />
-      <module name="JobOrder" options="-parameters" />
-      <module name="Notification" options="-parameters" />
       <module name="SimpleChatroom" options="-parameters" />
       <module name="User" options="-parameters" />
       <module name="api-gateway" options="-parameters" />
+      <module name="chatroom" options="-parameters" />
       <module name="euraka-server" options="-parameters" />
+      <module name="notification" options="-parameters" />
       <module name="springbootmicroservice" options="-parameters" />
+      <module name="userjob" options="-parameters" />
     </option>
   </component>
 </project>

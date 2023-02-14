@@ -19,11 +19,11 @@
   <!-- FIXME change it to the project's website -->
   <url>http://www.example.com</url>
   <modules>
-    <module>JobOrder</module>
-    <module>Notification</module>
+    <module>userjob</module>
+    <module>notification</module>
     <module>euraka-server</module>
     <module>api-gateway</module>
-    <module>Chatroom</module>
+    <module>chatroom</module>
 
   </modules>
 
@@ -64,6 +64,17 @@
          <source>16</source>
          <target>16</target>
        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>com.google.cloud.tools</groupId>
+        <artifactId>jib-maven-plugin</artifactId>
+        <version>3.2.1</version>
+        <configuration>
+          <from>
+            <image>eclipse-temurin:17.0.4.1_1-jre</image>
+          </from>
+          <to>register.hub.docker.com/freelance_platform/${project.artifactId}</to>
+        </configuration>
       </plugin>
     </plugins>
 
