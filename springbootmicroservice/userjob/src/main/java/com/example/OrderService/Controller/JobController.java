@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Collection;
 import java.util.List;
 
+//api for job handling
 @RestController
 @RequestMapping("/UserJob")
 public class JobController {
@@ -28,33 +29,35 @@ public class JobController {
     private JobRepository jobRepository;
 
 
+    //posting jobs
     @PostMapping("/Job/post")
     public Response postJob(@RequestBody JobOrder jobOrder) throws IllegalAccessException {
         return jobService.postJob(jobOrder);
     }
 
+    //get an single job
     @GetMapping("/Job/get/{order_id}")
     public Response getsinglejob(@PathVariable int order_id) {
-        return jobService.GetSingleJob(order_id);
+        JobOrder job=jobService.findByOrderid(order_id);
+        return jobService.GetSingleJob(job);
     }
 
-    /*
-    can use traditional dto:
-    build a converter method,
-    map using findAll().stream().map(this::${converter_method}).collect(Collectors.toList())
-     */
+
+    //get the number of posted jobs of the specific user
     @GetMapping("/Jobs/User/{user_id}")
-    public Collection<Response> getAllJobs(@PathVariable int user_id) {
+    public List<Response> getAllJobs(@PathVariable int user_id) {
 
-        return jobRepository.getUserJobs(user_id);
+        return jobService.getUserJobs(user_id);
 
     }
 
+    //update job
     @PutMapping("/job/edit")
     public Response editjob(@RequestBody JobRequestDto jobRequestDto) {
         return jobService.editJob(jobRequestDto);
     }
 
+    //delete job
     @DeleteMapping("/jobs/delete/{order_id}")
     public String deleteJob(@PathVariable int order_id) {
         if (jobRepository.findById(order_id).orElse(null) == null) {
@@ -66,13 +69,20 @@ public class JobController {
 
     }
 
+    //get all jobs
     @GetMapping("/jobs/all")
-    public Collection<Response> getallJobs() {
+    public List<Response> getallJobs() {
 
-        return jobRepository.getAllJobs();
+        return jobService.getAllJobs();
 
     }
 
+    @GetMapping("jobs/region/{address_id}")
+    public List<Response> getRegionJobs(@PathVariable int address_id){
+        return jobService.getRegionJobs(address_id);
+    }
+
+    //user apply a job
     @PostMapping("/job/apply")
     //user_id apply for the job
     public String Applyjob(@RequestBody DashRequestDto applyjobdto) {
@@ -93,10 +103,13 @@ public class JobController {
         return dashbroadService.acceptApplication(dto.getOrder_id(), dto.getPoster_id(), dto.getApply_id());
     }
 
+    //delete the application
     @DeleteMapping("/Applications/delete")
     public String RemoveApplication(@RequestBody DashRequestDto dto){
         return dashbroadService.deleteApplication(dto.getOrder_id(),dto.getApply_id());
     }
+
+    //the poster accept the application
     @PostMapping("/Accept/show")        //need check
     public List<InfoResponse> showAccept(@RequestBody DashRequestDto dto) {
         return dashbroadService.showAccepted(dto.getOrder_id(), dto.getPoster_id());

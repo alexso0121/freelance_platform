@@ -22,5 +22,4 @@ com/example/OrderService/Service/JobService.class
 com/example/OrderService/Entity/User.class
 com/example/OrderService/Repository/DashBroadRepository.class
 com/example/OrderService/dto/ChatMessage.class
-com/example/OrderService/Service/kafkaProducer.class
 com/example/OrderService/Repository/UserRepository.class

@@ -1,0 +1,11 @@
+<settings>
+    ...
+    <servers>
+        ...
+        <server>
+            <id>MY_REGISTRY</id>
+            <username>alex0121</username>
+            <password>LR4135alex</password>
+        </server>
+    </servers>
+</settings>

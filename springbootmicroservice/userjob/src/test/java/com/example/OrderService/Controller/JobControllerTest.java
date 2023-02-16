@@ -7,30 +7,25 @@ import com.example.OrderService.Repository.DashBroadRepository;
 import com.example.OrderService.Repository.JobRepository;
 import com.example.OrderService.Repository.UserRepository;
 import com.example.OrderService.dto.DashRequestDto;
-import com.fasterxml.jackson.core.JsonProcessingException;
+import com.example.OrderService.dto.JobRequestDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.event.annotation.BeforeTestExecution;
-import org.springframework.test.context.event.annotation.BeforeTestMethod;
-import org.springframework.test.context.transaction.BeforeTransaction;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -76,7 +71,7 @@ class JobControllerTest {
     }
 
     private JobOrder Mockjob(int user_id,String Title){
-        JobOrder job=new JobOrder(0,user_id,Title,null,null,null,0,3,false,0,null);
+        JobOrder job=JobOrder.builder().user_id(user_id).Title(Title).build();
         return job;
     }
     private User mockUser(int id,String username){
@@ -87,6 +82,7 @@ class JobControllerTest {
         user.getApplications().add(mockJobOrder("job2title","d"));*/
         return user;
     }
+
 
 
 
@@ -105,8 +101,6 @@ class JobControllerTest {
                 .andDo(print())
                 .andExpect(jsonPath("$.title")
                         .value("job1"))
-                .andExpect(jsonPath("$.username")
-                        .value("admin"))
                 .andDo(print());
 
         jobRepository.deleteAll();
@@ -126,15 +120,27 @@ class JobControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].title")
                         .value("job1"))
-                .andExpect(jsonPath("$[0].username")
-                        .value("admin"))
                 .andExpect(jsonPath("$[1].title")
                         .value("job2"))
-                .andExpect(jsonPath("$[1].username")
-                        .value("admin"))
                 .andDo(print());
         jobRepository.deleteAll();
         userRepository.deleteAll();
+    }
+
+    @Test
+    @Transactional
+    void editJobCheckisedit() throws Exception {
+        JobRequestDto requestDto=JobRequestDto.builder().order_id(1).title("updatejob").build();
+        String request= objectMapper.writeValueAsString(requestDto);
+
+
+        mockMvc.perform(MockMvcRequestBuilders.put("/UserJob/job/edit")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(request).accept(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.title").value("updatejob"))
+                .andDo(print());
+
     }
 
 

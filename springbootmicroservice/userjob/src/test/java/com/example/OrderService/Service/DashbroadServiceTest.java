@@ -65,7 +65,7 @@ class DashbroadServiceTest {
 
         //Assertions.assertEquals("admin",userCoreService.findById(1).getUsername());
         DashbroadService Spy=spy(dashbroadService);
-        doReturn(true).when(Spy).sendNotice("You have successfully applied for job id:1",1,1);
+        doReturn(true).when(Spy).sendNotice("You have successfully applied for job id:1",1);
         doReturn(true).when(Spy).postApplication(mockuser,1);
 
         when(userCoreService.findById(1)).thenReturn(mockuser);
@@ -101,7 +101,6 @@ class DashbroadServiceTest {
         List<User> list=new ArrayList<>();
         list.add(user1);
         DashBroad dashBroad=new DashBroad(1,1,1,1,list,new ArrayList<>());
-        JobOrder job=new JobOrder(0,1,"sda",null,null,null,0,3,false,0,null);
 
         when(dashBroadRepository.findByOrder_id(1)).thenReturn(dashBroad);
         Assertions.assertEquals(true,dashBroad.getApplier_id().contains(user1));
@@ -133,7 +132,7 @@ class DashbroadServiceTest {
 
         doReturn(true).when(Spy)
                 .sendNotice("You have already send to much of applications.Please delete some and try again"
-                ,1,1);
+                ,1);
 
        /* when(jobService.findByOrderid(1)).thenReturn(job);
         when(userCoreService.saveAndReturn(user)).thenReturn(user);*/

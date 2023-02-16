@@ -15,42 +15,28 @@ public interface JobRepository extends JpaRepository<JobOrder, Integer> {
      @Query(
              value = "SELECT * "+
                      " FROM job_order " +
-                     " WHERE title= ?1 ;",nativeQuery = true
+                     " WHERE title= ?1 AND organization=?2 ;",nativeQuery = true
      )
-     JobOrder findByTitle(String title);
-     @Query(
-             value = "SELECT region,order_id,title,description,requirement,salary,user_info.username,user_info.contact,date"+
-                     " FROM job_order " +
-                     " FULL JOIN user_info " +
-                     " ON user_id=user_info.id" +
-                     " WHERE order_id= ?1 ;",nativeQuery = true
-     )
-     Response singlejob(int order_id);
+     JobOrder findByTitleAndOrganization(String title,String organization);
 
      @Query(
-             value = "SELECT region,order_id,title,description,requirement,salary,user_info.username,user_info.contact,date"+
+             value = "SELECT *"+
                      " FROM job_order " +
-                     " FULL JOIN user_info " +
-                     " ON user_id=user_info.id" +
-                     " WHERE user_info.id= ?1 ORDER BY date DESC;",nativeQuery = true
+                     " WHERE user_id= ?1 ORDER BY date DESC;",nativeQuery = true
      )
-     Collection<Response> getUserJobs(int userId);
+     List<JobOrder> getUserJobs(int user_id);
      @Query(
-             value = "SELECT region,order_id,title,description,requirement,salary,user_info.username,user_info.contact,date"+
+             value = "SELECT *"+
                      " FROM job_order " +
-                     " FULL JOIN user_info " +
-                     " ON user_id=user_info.id" +
-                     " WHERE region_id = ?1 ORDER BY date DESC;",nativeQuery = true
+                     " WHERE address_id = ?1 ORDER BY date DESC;",nativeQuery = true
      )
-     Collection<Response> getRegionJobs(int region_id);
+     List<JobOrder> getRegionJobs(int address_id);
 
 
      @Query(
-             value = "SELECT region,order_id,title,description,requirement,salary,user_info.username,user_info.contact,date"+
+             value = "SELECT *"+
                      " FROM job_order " +
-                     " FULL JOIN user_info " +
-                     " ON user_id=user_info.id" +
                      " ORDER BY date DESC;",nativeQuery = true
      )
-     Collection<Response> getAllJobs();
+     List<JobOrder> getAllJobs();
 }

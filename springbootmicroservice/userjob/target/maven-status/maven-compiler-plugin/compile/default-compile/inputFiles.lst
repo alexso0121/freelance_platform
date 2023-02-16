@@ -10,7 +10,6 @@
 /home/so/Desktop/freelance_platform/springbootmicroservice/userjob/src/main/java/com/example/OrderService/dto/DashRequestDto.java
 /home/so/Desktop/freelance_platform/springbootmicroservice/userjob/src/main/java/com/example/OrderService/dto/Response.java
 /home/so/Desktop/freelance_platform/springbootmicroservice/userjob/src/main/java/com/example/OrderService/Service/DashbroadService.java
-/home/so/Desktop/freelance_platform/springbootmicroservice/userjob/src/main/java/com/example/OrderService/Service/kafkaProducer.java
 /home/so/Desktop/freelance_platform/springbootmicroservice/userjob/src/main/java/com/example/OrderService/OrderServiceApplication.java
 /home/so/Desktop/freelance_platform/springbootmicroservice/userjob/src/main/java/com/example/OrderService/dto/InfoResponse.java
 /home/so/Desktop/freelance_platform/springbootmicroservice/userjob/src/main/java/com/example/OrderService/Repository/JobRepository.java

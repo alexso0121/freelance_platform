@@ -63,8 +63,12 @@ class UserCoreControllerTest  {
     }
 
     private JobOrder mockJobOrder(String title,String des){
-        return new JobOrder(0,1,title,des,null,null,0,2,false,0,null);
-
+        //return new JobOrder(0,1,title,des,null,null,0,2,false,0,null);
+        return JobOrder.builder()
+                .order_id(1)
+                .Title(title)
+                .Description(des)
+                .build();
     }
 
 

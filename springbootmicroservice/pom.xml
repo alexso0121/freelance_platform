@@ -69,12 +69,30 @@
         <groupId>com.google.cloud.tools</groupId>
         <artifactId>jib-maven-plugin</artifactId>
         <version>3.2.1</version>
+
         <configuration>
           <from>
             <image>eclipse-temurin:17.0.4.1_1-jre</image>
           </from>
-          <to>register.hub.docker.com/freelance_platform/${project.artifactId}</to>
+          <to>
+            <image>docker.io/freelance_platform/${artifactId}</image>
+            <auth>
+              <!--suppress UnresolvedMavenProperty -->
+              <username>${docker.username}</username>
+              <!--suppress UnresolvedMavenProperty -->
+              <password>${docker.password}</password>
+            </auth>
+          </to>
+
         </configuration>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>build</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
 

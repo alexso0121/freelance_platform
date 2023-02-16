@@ -23,12 +23,17 @@ public class JobOrder {
     private String Title;
     private String Description;
     private String Requirement;
-    private Date date;
+    private String contact;
     private double salary;
+    private String organization;
     private int address_id;
     private boolean isaccepted=false;
+    private String date;
     private int application_number=1;
     private String region;
+
+
+
 
 
 

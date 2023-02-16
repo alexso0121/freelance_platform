@@ -8,6 +8,7 @@ import com.example.OrderService.Repository.JobRepository;
 import com.example.OrderService.dto.ChatMessage;
 import com.example.OrderService.dto.InfoResponse;
 import com.example.OrderService.dto.NoticeRespond;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -73,27 +74,19 @@ public class DashbroadService {
             //send notification
             String notification="You have successfully applied for job id:"+order_id;
         System.out.println(apply_id+order_id);
-            sendNotice(notification,apply_id,order_id);
+            sendNotice(notification,apply_id);
 
         return "successfully added";
 
     }
 
-    public Boolean sendNotice(String notification,int apply_id,int order_id){
-        try{
-            LocalDateTime myDateObj = LocalDateTime.now();
+    public void sendNotice(String notification,int userid){
+        LocalDateTime myDateObj = LocalDateTime.now();
         DateTimeFormatter myFormatObj = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
         String formattedDate = myDateObj.format(myFormatObj);
         kafkaTemplate.send("notificationTopic",new NoticeRespond(
-                apply_id,formattedDate,notification
+                userid,formattedDate,notification
         ));
-        log.info(apply_id+"has applied job with id: "+order_id);
-        return true;
-        }
-        catch (Exception exception){
-            log.error("cant found the consumer");
-            return false;
-        }
     }
 
     //add the application to the user entity
@@ -101,7 +94,7 @@ public class DashbroadService {
 
             if(user.getApplications().size()==20){
                 String notification="You have already send to much of applications.Please delete some and try again";
-            sendNotice(notification, user.getId(), order_id);
+            sendNotice(notification, user.getId());
             return false;
             }
             JobOrder job=jobService.findByOrderid(order_id);
@@ -134,22 +127,24 @@ public class DashbroadService {
                 .collect(Collectors.toList());
     };
 
+    public void VerifyCanAcceptApplication(@NonNull DashBroad dashBroad,@NonNull User user,NonNull acceptedProfile){
+         if(!dashBroad.getApplier_id().contains(user)){
+             new IllegalAccessException("no application found");
+        }
+
+
+    }
+
     public InfoResponse acceptApplication(int orderId, int posterId,int applyId) {
         //check userId ,
         DashBroad dashBroad= dashBroadRepository.findByOrder_id(orderId);
-        if(dashBroad==null){
-            log.error("no requested id found");
-            return null;
-        }
-
+        assert dashBroad!=null;
         InfoResponse acceptedProfile=userCoreService.getProfile(applyId);
+        assert acceptedProfile!=null;
         User user=userCoreService.getUser(applyId);
-        if (acceptedProfile==null||!dashBroad.getApplier_id().contains(user)){
-            System.out.println(dashBroad.getApplier_id());
-            System.out.println(dashBroad.getApplier_id().contains(user));
-            log.error("no application with user_id found");
-            return null;
-        }
+        assert user!=null;
+        VerifyCanAcceptApplication(dashBroad,user,acceptedProfile);
+
 
         //update the accepted list
         log.info("valid request");
@@ -167,24 +162,13 @@ public class DashbroadService {
         }
 
         //send notice
-
-        LocalDateTime myDateObj = LocalDateTime.now();
-        DateTimeFormatter myFormatObj = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
-        String formattedDate = myDateObj.format(myFormatObj);
-        String posterNotice="You have successfully accepted "+acceptedProfile.getUsername()+"'s application for job id:"+orderId
-                +" at "+formattedDate;
-        sendNotice(posterNotice,applyId,orderId);
-        /*kafkaTemplate.send("notificationTopic",new NoticeRespond(
-                posterId,formattedDate,posterNotice
-        ));*/
+        String posterNotice="You have successfully accepted "+acceptedProfile.getUsername()+"'s application for job id:"+orderId;
+        sendNotice(posterNotice,applyId);
 
         String ApplyNotice="Your application for Job with title '"+jobOrder.getTitle()+"' has been accepted" +
-                " at"+formattedDate;
-        sendNotice(ApplyNotice,applyId,orderId);
+                " at";
+        sendNotice(ApplyNotice,applyId);
 
-       /* kafkaTemplate.send("notificationTopic",new NoticeRespond(
-                posterId,formattedDate,ApplyNotice
-        ));*/
         //build a chatroom=>send chat
 
         log.info("Start sending chat");
@@ -206,6 +190,7 @@ public class DashbroadService {
         return acceptedProfile;
 
     }
+
 
     public void generateChat(ChatMessage buildmessage) {
         webclient.baseUrl("http://CHATROOM").build()

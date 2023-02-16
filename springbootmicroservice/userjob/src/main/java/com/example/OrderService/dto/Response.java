@@ -1,17 +1,25 @@
 package com.example.OrderService.dto;
 
-public interface Response {
-    String getUsername();
-    int getOrder_id();
-    String getTitle();
-    String getDescription();
-    String getRequirement();
-    String getSalary();
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-    String getContact();
-    String getDate();
-    String getRegion();
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class Response {
 
+    private int order_id;
+    private String title;
+    private String description;
+    private String requirement;
+    private double salary;
+    private String organization;
+    private String date;
+    private String region;
+    private int application_number;
 
 
 
