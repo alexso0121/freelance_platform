@@ -1,5 +1,6 @@
 /home/so/Desktop/freelance_platform/springbootmicroservice/userjob/src/test/java/com/example/OrderService/Controller/UserCoreControllerTest.java
 /home/so/Desktop/freelance_platform/springbootmicroservice/userjob/src/test/java/com/example/OrderService/Service/JobServiceTest.java
 /home/so/Desktop/freelance_platform/springbootmicroservice/userjob/src/test/java/com/example/OrderService/Service/UserCoreServiceTest.java
-/home/so/Desktop/freelance_platform/springbootmicroservice/userjob/src/test/java/com/example/OrderService/Service/DashbroadServiceTest.java
+/home/so/Desktop/freelance_platform/springbootmicroservice/userjob/src/test/java/com/example/OrderService/Service/ApplicationServiceTest.java
+/home/so/Desktop/freelance_platform/springbootmicroservice/userjob/src/test/java/com/example/OrderService/AbstractIntegrationTest.java
 /home/so/Desktop/freelance_platform/springbootmicroservice/userjob/src/test/java/com/example/OrderService/Controller/JobControllerTest.java

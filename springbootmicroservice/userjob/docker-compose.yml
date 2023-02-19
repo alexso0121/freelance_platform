@@ -1,0 +1,30 @@
+version: '3'
+services:
+  dbmysql:
+    image: mysql:latest
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: LR4135alex*
+      MYSQL_USER: root
+      MYSQL_DATABASE: freelance
+
+    ports:
+      - "3306:3306"
+    volumes:
+      - freelance_volume
+
+
+  userjob:
+    depends_on:
+      - dbmysql
+    image: userjob:latest
+    container_name: userjob
+    build:
+      context: .
+      dockerfile: Dockerfile  #docker file path (. means root directory)
+    ports:
+      - "8000:8000"
+    environment: {SPRING_DATASOURCE_URL: 'jdbc:mysql://dbmysql:3306/freelance'}
+
+
+

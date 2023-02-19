@@ -1,29 +1,27 @@
 package com.example.OrderService.Service;
 
 
-import com.example.OrderService.Entity.DashBroad;
 import com.example.OrderService.Entity.JobOrder;
 import com.example.OrderService.Entity.User;
-import com.example.OrderService.Repository.DashBroadRepository;
+import com.example.OrderService.Repository.ApplicationRepository;
 import com.example.OrderService.Repository.JobRepository;
 import com.example.OrderService.Repository.LocationRepository;
 import com.example.OrderService.dto.JobRequestDto;
 import com.example.OrderService.dto.NoticeRespond;
-import com.example.OrderService.dto.Response;
+import com.example.OrderService.dto.JobResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.autoconfigure.security.saml2.Saml2RelyingPartyProperties;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
+//business logic for handling Jobs
 @Slf4j
 @Service
 public class JobService {
@@ -33,7 +31,7 @@ public class JobService {
 
 
 
-    private final DashBroadRepository dashBroadRepository;
+    private final ApplicationRepository applicationRepository;
 
 
     private final LocationRepository locationRepository;
@@ -44,9 +42,9 @@ public class JobService {
 
 
 
-    public JobService(JobRepository jobRepository, DashBroadRepository dashBroadRepository, LocationRepository locationRepository, @Lazy UserCoreService userCoreService, KafkaTemplate<String, NoticeRespond> kafkaTemplate) {
+    public JobService(JobRepository jobRepository, ApplicationRepository applicationRepository, LocationRepository locationRepository, @Lazy UserCoreService userCoreService, KafkaTemplate<String, NoticeRespond> kafkaTemplate) {
         this.jobRepository = jobRepository;
-        this.dashBroadRepository = dashBroadRepository;
+        this.applicationRepository = applicationRepository;
         this.locationRepository = locationRepository;
         this.userCoreService = userCoreService;
         this.kafkaTemplate = kafkaTemplate;
@@ -55,7 +53,7 @@ public class JobService {
 
 
     //post a job
-    public Response postJob(JobOrder jobOrder) throws IllegalAccessException {
+    public JobResponse postJob(JobOrder jobOrder) throws IllegalAccessException {
         //verify can post
         if(!VerifyCanPost(jobOrder)){
             return null;
@@ -63,15 +61,11 @@ public class JobService {
         LOG.info("User can upload ");
         int user_id=jobOrder.getUser_id();
 
-
+        //convert the address_id to region base on the 18 district in hk
         jobOrder.setRegion(getLocation(jobOrder.getAddress_id()));
         JobOrder job=jobRepository.save(jobOrder);
 
-        //build a row of relationship in dashBroad
-        dashBroadRepository.save(new DashBroad(
-                0,job.getOrder_id(),user_id, job.getApplication_number(), null,null));
-        log.info("new dashboad is built");
-
+        //send notification to the poster
         String notification="The Job with order id (" +job.getOrder_id()+") has successfully posted !";
         sendNotice(notification,user_id);
 
@@ -110,9 +104,9 @@ public class JobService {
     }
 
     //main method for converting Joborder to user_id
-    public Response GetSingleJob(JobOrder job){
+    public JobResponse GetSingleJob(JobOrder job){
 
-        return Response.builder()
+        return JobResponse.builder()
                 .order_id(job.getOrder_id())
                 .title(job.getTitle())
                 .description(job.getDescription())
@@ -137,7 +131,8 @@ public class JobService {
 
 
 
-    public Response editJob(JobRequestDto jobRequestDto) {
+    //edit the job
+    public JobResponse editJob(JobRequestDto jobRequestDto) {
         JobOrder savejob=jobRepository.findById(jobRequestDto.getOrder_id()).orElse(null);
 
         assert savejob != null;
@@ -158,44 +153,29 @@ public class JobService {
     }
 
 
-    //show the user profile who have applied for the job
-    public List<Response> showApplications(int id) {
-        User user=userCoreService.findById(id);
-        if(user==null){
-            log.error("user not found");
-            return null;
-        }
-        //map the Joborder to response
-        return user.getApplications().stream()
-                .map(this::GetSingleJob)
-                .collect(Collectors.toList());
-
-    }
 
     //get the jobs which is posted by the user
-    public List<Response> getUserJobs(int userId) {
+    public List<JobResponse> getUserJobs(int userId) {
        return jobRepository.getUserJobs(userId).stream()
                 .map(this::GetSingleJob)    //map the joborder class to response
                 .collect(Collectors.toList());
     }
 
     //get all the jobs which are not being accepted
-    public List<Response> getAllJobs() {
+    public List<JobResponse> getAllJobs() {
         return jobRepository.getAllJobs().stream()
-                .filter(res->!res.isIsaccepted())
+                .filter(res->!res.isClosed())
                 .map(this::GetSingleJob)
                 .collect(Collectors.toList());
     }
 
     //get jobs(not being accepted) base on the regions (address_id)
-    public List<Response> getRegionJobs(int addressId) {
+    public List<JobResponse> getRegionJobs(int addressId) {
         return jobRepository.getRegionJobs(addressId).stream()
-                .filter(res->!res.isIsaccepted())
+                .filter(res->!res.isClosed())
                 .map(this::GetSingleJob)
                 .collect(Collectors.toList());
     }
-    //add application
-
 
 
 

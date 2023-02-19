@@ -21,7 +21,7 @@
   <modules>
     <module>userjob</module>
     <module>notification</module>
-    <module>euraka-server</module>
+    <module>eureka-server</module>
     <module>api-gateway</module>
     <module>chatroom</module>
 
@@ -65,35 +65,49 @@
          <target>16</target>
        </configuration>
       </plugin>
-      <plugin>
+<!--     \-->
+      <!--<plugin>
         <groupId>com.google.cloud.tools</groupId>
         <artifactId>jib-maven-plugin</artifactId>
         <version>3.2.1</version>
-
         <configuration>
           <from>
-            <image>eclipse-temurin:17.0.4.1_1-jre</image>
+            <image>openjdk:8</image>
           </from>
-          <to>
-            <image>docker.io/freelance_platform/${artifactId}</image>
-            <auth>
-              <!--suppress UnresolvedMavenProperty -->
-              <username>${docker.username}</username>
-              <!--suppress UnresolvedMavenProperty -->
-              <password>${docker.password}</password>
-            </auth>
-          </to>
-
+          <container>
+            <ports>
+              <port>8080</port>
+            </ports>
+            <format>OCI</format>
+          </container>
         </configuration>
         <executions>
           <execution>
+            <id>push-custom-tag</id>
             <phase>package</phase>
+            <configuration>
+              <to>
+                <image>docker.io/freelance_platform/${artifactId}:${artifactId}</image>
+              </to>
+            </configuration>
+            <goals>
+              <goal>build</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>push-latest-tag</id>
+            <phase>package</phase>
+            <configuration>
+              <to>
+                <image>docker.io/freelance_platform/${artifactId}:latest</image>
+              </to>
+            </configuration>
             <goals>
               <goal>build</goal>
             </goals>
           </execution>
         </executions>
-      </plugin>
+      </plugin>-->
     </plugins>
 
   </build>

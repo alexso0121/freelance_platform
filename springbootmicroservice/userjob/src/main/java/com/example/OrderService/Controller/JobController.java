@@ -2,17 +2,16 @@ package com.example.OrderService.Controller;
 
 import com.example.OrderService.Entity.JobOrder;
 import com.example.OrderService.Repository.JobRepository;
-import com.example.OrderService.Service.DashbroadService;
+import com.example.OrderService.Service.ApplicationService;
 
-import com.example.OrderService.dto.DashRequestDto;
+import com.example.OrderService.dto.ApplicationRequest;
 import com.example.OrderService.dto.InfoResponse;
 import com.example.OrderService.dto.JobRequestDto;
-import com.example.OrderService.dto.Response;
+import com.example.OrderService.dto.JobResponse;
 import com.example.OrderService.Service.JobService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collection;
 import java.util.List;
 
 //api for job handling
@@ -23,7 +22,7 @@ public class JobController {
     private JobService jobService;
 
     @Autowired
-    private DashbroadService dashbroadService;
+    private ApplicationService applicationService;
 
     @Autowired
     private JobRepository jobRepository;
@@ -31,13 +30,13 @@ public class JobController {
 
     //posting jobs
     @PostMapping("/Job/post")
-    public Response postJob(@RequestBody JobOrder jobOrder) throws IllegalAccessException {
+    public JobResponse postJob(@RequestBody JobOrder jobOrder) throws IllegalAccessException {
         return jobService.postJob(jobOrder);
     }
 
-    //get an single job
+    //show details of a single job
     @GetMapping("/Job/get/{order_id}")
-    public Response getsinglejob(@PathVariable int order_id) {
+    public JobResponse getsinglejob(@PathVariable int order_id) {
         JobOrder job=jobService.findByOrderid(order_id);
         return jobService.GetSingleJob(job);
     }
@@ -45,15 +44,15 @@ public class JobController {
 
     //get the number of posted jobs of the specific user
     @GetMapping("/Jobs/User/{user_id}")
-    public List<Response> getAllJobs(@PathVariable int user_id) {
+    public List<JobResponse> getAllJobs(@PathVariable int user_id) {
 
         return jobService.getUserJobs(user_id);
 
     }
 
-    //update job
+    //editing job
     @PutMapping("/job/edit")
-    public Response editjob(@RequestBody JobRequestDto jobRequestDto) {
+    public JobResponse editjob(@RequestBody JobRequestDto jobRequestDto) {
         return jobService.editJob(jobRequestDto);
     }
 
@@ -69,49 +68,60 @@ public class JobController {
 
     }
 
-    //get all jobs
+    //show all available jobs
     @GetMapping("/jobs/all")
-    public List<Response> getallJobs() {
+    public List<JobResponse> getallJobs() {
 
         return jobService.getAllJobs();
 
     }
 
+   /*
+    -showing available jobs to the clients
+    -filter base on region
+    */
     @GetMapping("jobs/region/{address_id}")
-    public List<Response> getRegionJobs(@PathVariable int address_id){
+    public List<JobResponse> getRegionJobs(@PathVariable int address_id){
         return jobService.getRegionJobs(address_id);
     }
 
-    //user apply a job
+    //sending application to a specific job
     @PostMapping("/job/apply")
     //user_id apply for the job
-    public String Applyjob(@RequestBody DashRequestDto applyjobdto) {
-        return dashbroadService.Applyjob(applyjobdto.getOrder_id(),applyjobdto.getApply_id());
+    public String Applyjob(@RequestBody ApplicationRequest applyjobdto) {
+        return applicationService.Applyjob(applyjobdto.getOrder_id()
+                ,applyjobdto.getPoster_id(),applyjobdto.getApply_id());
     }
 
 
-    //access the user profile of the applications
-    //only the poster are permitted use this api
+    //-access the user profile of the applications
+    //-only the poster are permitted use this api
     @PostMapping("/Applications/show")
-    public List<InfoResponse> showApplications(@RequestBody DashRequestDto dto) {
-        return dashbroadService.showApplications(dto.getOrder_id(), dto.getPoster_id());
+    public List<InfoResponse> showApplications(@RequestBody ApplicationRequest dto) {
+        return applicationService.showApplications(dto.getOrder_id(), dto.getPoster_id());
     }
+
     //the poster accept application
     //only the poster are permitted use this api
     @PutMapping("/Applications/accept")
-    public InfoResponse acceptApplication (@RequestBody DashRequestDto dto){
-        return dashbroadService.acceptApplication(dto.getOrder_id(), dto.getPoster_id(), dto.getApply_id());
+    public InfoResponse acceptApplication (@RequestBody ApplicationRequest dto){
+        return applicationService.acceptApplication(dto.getOrder_id(), dto.getPoster_id(), dto.getApply_id());
     }
 
     //delete the application
     @DeleteMapping("/Applications/delete")
-    public String RemoveApplication(@RequestBody DashRequestDto dto){
-        return dashbroadService.deleteApplication(dto.getOrder_id(),dto.getApply_id());
+    public String RemoveApplication(@RequestBody ApplicationRequest dto){
+        return applicationService.deleteApplication(dto.getOrder_id(),dto.getApply_id());
     }
 
-    //the poster accept the application
+    //the job poster accept the application
     @PostMapping("/Accept/show")        //need check
-    public List<InfoResponse> showAccept(@RequestBody DashRequestDto dto) {
-        return dashbroadService.showAccepted(dto.getOrder_id(), dto.getPoster_id());
+    public List<InfoResponse> showAccept(@RequestBody ApplicationRequest dto) {
+        return applicationService.showAccepted(dto.getOrder_id(), dto.getPoster_id());
+    }
+    //show the number of jobs the user has applied
+    @GetMapping("/application/history/{id}")
+    public List<JobResponse> showApplicationshistory(@PathVariable int id){
+        return applicationService.showApplicationsToUser(id);
     }
 }

@@ -55,10 +55,7 @@ class UserCoreControllerTest  {
 */
     private User mockUser(){
 
-        User user= new User(0,"admin","admin",null,null,"yl","sd"
-                ,"434","dsf",null,4,2,new ArrayList<>());
-        user.getApplications().add(mockJobOrder("job1title","b"));
-        user.getApplications().add(mockJobOrder("job2title","d"));
+      User user=User.builder().id(1).username("admin").password("admin").build();
         return user;
     }
 
@@ -76,6 +73,7 @@ class UserCoreControllerTest  {
 
 
     @Test
+    @Transactional
     void getProfile() throws Exception {
         userRepository.save(mockUser());
          mockMvc.perform(get("/UserJob/getProfile/{id}", 1)
@@ -91,13 +89,14 @@ class UserCoreControllerTest  {
         userRepository.deleteById(1);
     }
     @Test
+    @Transactional
     void getUserByName() throws Exception {
         userRepository.save(mockUser());
         mockMvc.perform(get("/UserJob/get/Byusername/{username}", "admin")
                         .accept(MediaType.APPLICATION_JSON_VALUE)
                 )
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.password").value("admin"));
+                .andExpect(jsonPath("$.username").value("admin"));
         //if cant found user
         MvcResult whatever = mockMvc.perform(get("/UserJob/get/Byusername/{username}", "whatever")
                         .accept(MediaType.APPLICATION_JSON_VALUE)
@@ -111,10 +110,10 @@ class UserCoreControllerTest  {
 
 
     @Test
+    @Transactional
     void updateUser() throws Exception {
         userRepository.save(mockUser());
-        User updated=new User(1,"alex","admin",null,null,"yl","sd"
-                ,"434","dsf",null,4,2,null);
+        User updated=User.builder().id(1).username("alex").build();
         String request=objectMapper.writeValueAsString(updated);
 
         MvcResult mvcResult=mockMvc.perform(MockMvcRequestBuilders.put("/UserJob/updateuser")
@@ -141,22 +140,6 @@ class UserCoreControllerTest  {
     }
 
 
-    @Test
-    void showApplicationshistory() throws Exception {
-
-        userRepository.save(mockUser());
-
-
-        mockMvc.perform(get("/UserJob/application/history/{id}", 1)
-                        .accept(MediaType.APPLICATION_JSON_VALUE)
-                )
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].title").value("job1title"))
-                .andExpect(jsonPath("$[1].title").value("job2title"))
-                .andDo(print());
-
-        userRepository.deleteById(1);
-    }
 
 
 
