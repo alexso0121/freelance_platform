@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+//class for storing data in 18 dist in hk
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor

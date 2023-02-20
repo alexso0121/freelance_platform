@@ -2,6 +2,7 @@ package com.example.OrderService.dto;
 
 import lombok.Data;
 
+//class for the response for displaying user profile
 @Data
 public class InfoResponse {
 

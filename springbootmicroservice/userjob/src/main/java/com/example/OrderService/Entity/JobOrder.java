@@ -6,9 +6,10 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
+import java.util.ArrayList;
 import java.util.List;
 
+//main class for storing data in job
 @Entity
 @Data
 @NoArgsConstructor
@@ -27,12 +28,15 @@ public class JobOrder {
     private double salary;
     private String organization;
     private int address_id;
-    private boolean isaccepted=false;
+    private boolean isClosed =false;
     private String date;
     private int application_number=1;
     private String region;
+    /*@OneToMany(targetEntity = Application.class,cascade = CascadeType.ALL)
+    @JoinColumn(name="JobApply_fk",referencedColumnName = "order_id")
+    private List<Application> applicationList=new ArrayList<>();
 
-
+*/
 
 
 

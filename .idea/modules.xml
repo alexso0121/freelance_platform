@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/springbootmicroservice/api-gateway/api-gateway.iml" filepath="$PROJECT_DIR$/springbootmicroservice/api-gateway/api-gateway.iml" />
+      <module fileurl="file://$PROJECT_DIR$/springbootmicroservice/chatroom/chatroom.iml" filepath="$PROJECT_DIR$/springbootmicroservice/chatroom/chatroom.iml" />
+      <module fileurl="file://$PROJECT_DIR$/springbootmicroservice/eureka-server/eureka-server.iml" filepath="$PROJECT_DIR$/springbootmicroservice/eureka-server/eureka-server.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/freelance_platform (copy).iml" filepath="$PROJECT_DIR$/.idea/freelance_platform (copy).iml" />
+      <module fileurl="file://$PROJECT_DIR$/springbootmicroservice/notification/notification.iml" filepath="$PROJECT_DIR$/springbootmicroservice/notification/notification.iml" />
+      <module fileurl="file://$PROJECT_DIR$/springbootmicroservice/springbootmicroservice.iml" filepath="$PROJECT_DIR$/springbootmicroservice/springbootmicroservice.iml" />
+      <module fileurl="file://$PROJECT_DIR$/springbootmicroservice/userjob/userjob.iml" filepath="$PROJECT_DIR$/springbootmicroservice/userjob/userjob.iml" />
+    </modules>
+  </component>
+</project>

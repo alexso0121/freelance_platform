@@ -21,7 +21,7 @@
   <modules>
     <module>userjob</module>
     <module>notification</module>
-    <module>euraka-server</module>
+    <module>eureka-server</module>
     <module>api-gateway</module>
     <module>chatroom</module>
 
@@ -65,35 +65,19 @@
          <target>16</target>
        </configuration>
       </plugin>
-      <plugin>
+<!--     \-->
+     <!-- <plugin>
         <groupId>com.google.cloud.tools</groupId>
         <artifactId>jib-maven-plugin</artifactId>
         <version>3.2.1</version>
-
         <configuration>
           <from>
             <image>eclipse-temurin:17.0.4.1_1-jre</image>
           </from>
-          <to>
-            <image>docker.io/freelance_platform/${artifactId}</image>
-            <auth>
-              <!--suppress UnresolvedMavenProperty -->
-              <username>${docker.username}</username>
-              <!--suppress UnresolvedMavenProperty -->
-              <password>${docker.password}</password>
-            </auth>
-          </to>
+          <to><image>registry.hub.docker.com/alex0121/${project.artifactId}</image></to>
+     </configuration>
 
-        </configuration>
-        <executions>
-          <execution>
-            <phase>package</phase>
-            <goals>
-              <goal>build</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
+      </plugin>-->
     </plugins>
 
   </build>

@@ -6,7 +6,7 @@ import lombok.*;
 import java.util.ArrayList;
 import java.util.List;
 
-
+//main class for data in user
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -33,9 +33,5 @@ public class User {
     private double score=3.0;
 
     private int Address_id;
-    @OneToMany(targetEntity = JobOrder.class,cascade = CascadeType.ALL)
-    @JoinColumn(name="UserJob_fk",referencedColumnName = "id")
-    private List<JobOrder> applications=new ArrayList<>(20); //Application that User_applied
-
 
 }

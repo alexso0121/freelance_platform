@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Objects;
 
+//business logic for handling user
 @Service
 @Slf4j
 public class UserCoreService {
@@ -21,6 +22,7 @@ public class UserCoreService {
 
     }
 
+    //check user can post/apply base on the score
     public Boolean VerifyCanOrder(int id){
         User user=userRespository.findById(id).orElse(null);
         if(user.getScore()<2.0){
@@ -31,11 +33,14 @@ public class UserCoreService {
     };
 
 
+    //convert a user to a user profile dto
     public InfoResponse getProfile( int id){
         return UserToDTO(userRespository
                         .findById(id).orElse(null));
 
     }
+
+    //editing a user
     public String updateUser(User user){
         User existinguser=userRespository.findById(user.getId()).orElseThrow(Error::new);
         if(!Objects.equals(user.getUsername(), existinguser.getUsername()) &&findByUsername(user.getUsername())!=null){
@@ -59,6 +64,8 @@ public class UserCoreService {
     public User getUser(int id){
         return userRespository.findById(id).orElse(null);
     }
+
+    //implementation converting user to a profile
     private InfoResponse UserToDTO(User user){
         if(user==null){return null;}
         InfoResponse respond=new InfoResponse();
@@ -89,6 +96,7 @@ public class UserCoreService {
     }
     //update application list in user
 
+    //delete a user
     public String Delete(int id){
         userRespository.deleteById(id);
         return "User with id "+id +"is removed";

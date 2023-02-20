@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Service;
 
+//class for storing 18 district info at the beginning in running
 @Configuration
 public class LocationInitService {
 

@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+//class for sending notification
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

@@ -24,3 +24,91 @@ services:
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+
+  dbmysql:
+    image: mysql:latest
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: LR4135alex*
+      MYSQL_USER: admin
+      MYSQL_DATABASE: freelance
+
+    ports:
+      - "3306:3306"
+    volumes:
+      - freelance_volume
+
+
+
+  eureka-server:
+    image: eureka:latest
+    container_name: eureka-server
+    build:
+      context: eureka-server/.
+      dockerfile: Dockerfile
+    ports:
+      - "8761:8761"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - LOGGING_LEVEL_ROOT=debug
+
+  api-gateway:
+    image: api-gateway:latest
+    build:
+      context: api-gateway/.
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8081"
+    depends_on:
+      - eureka-server
+    environment:
+      - eureka.client.serviceUrl.defaultZone=http://eureka-server:8761/eureka
+
+  notification:
+    image: notification:latest
+    build:
+      context: notification/.
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - eureka-server
+      - broker
+    environment:
+      - eureka.client.serviceUrl.defaultZone=http://eureka-server:8761/eureka
+
+  chatroom:
+    image: chatroom:latest
+    build:
+      context: chatroom/.
+      dockerfile: Dockerfile
+    ports:
+      - "8084:8084"
+    depends_on:
+      - eureka-server
+    environment:
+      - eureka.client.serviceUrl.defaultZone=http://eureka-server:8761/eureka
+
+
+
+
+
+  userjob:
+    depends_on:
+      - dbmysql
+      - eureka-server
+    image: userjob:latest
+    container_name: userjob
+    build:
+      context: userjob/.
+      dockerfile: Dockerfile  #docker file path (. means root directory)
+    ports:
+      - "8000:8000"
+    environment: { SPRING_DATASOURCE_URL: 'jdbc:mysql://dbmysql:3306/freelance' ,
+                    SPRING_PASSWORD: "LR4135alex*",
+                    SPRING_USER: "admin",
+                   EUREKA_CLIENT_SERVICEURL_DEFAULTZONE:  "http://eureka-server:8761/eureka"
+
+    }
+
+
