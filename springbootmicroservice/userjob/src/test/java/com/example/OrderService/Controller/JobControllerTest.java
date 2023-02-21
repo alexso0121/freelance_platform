@@ -9,6 +9,7 @@ import com.example.OrderService.Repository.UserRepository;
 import com.example.OrderService.dto.ApplicationRequest;
 import com.example.OrderService.dto.JobRequestDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,9 +20,14 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.testcontainers.containers.MySQLContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.util.ArrayList;
 
@@ -31,9 +37,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+
 @Slf4j
-@RunWith(SpringRunner.class)
+//@RunWith(SpringRunner.class)
+@Testcontainers
 class JobControllerTest   {
 
     @Autowired
@@ -50,24 +57,22 @@ class JobControllerTest   {
     @Autowired
     private UserRepository userRepository;
 
-    /*@Container
-    private static MySQLContainer container=new MySQLContainer("mysql:8.0.26");
+    @Container
+    private static MySQLContainer container=new MySQLContainer("mysql:8.0.26")
+            ;
 
     @DynamicPropertySource
     public static void setProperties(DynamicPropertyRegistry dynamicPropertyRegistry){
         dynamicPropertyRegistry.add("spring.datasource.url",container::getJdbcUrl);
         dynamicPropertyRegistry.add("spring.datasource.username",container::getUsername);
         dynamicPropertyRegistry.add("spring.datasource.password",container::getPassword);
-    }*/
+    }
 
 
     @BeforeEach
     public void setUp(){
         log.info("inti");
-        jobRepository.save(Mockjob(1,"job1"));
-        userRepository.save(mockUser(0,"admin"));
-        applicationRepository.save(
-                Application.builder().apply_id(1).order_id(1).build());
+
 
 
     }
@@ -96,10 +101,15 @@ class JobControllerTest   {
 
 
     @Test
+    @Transactional
     void getsinglejob() throws Exception {
 
+        JobOrder job=jobRepository.save(Mockjob(1,"job1"));
+        User user=userRepository.save(mockUser(0,"admin"));
+        applicationRepository.save(
+                Application.builder().apply_id(user.getId()).order_id(job.getOrder_id()).build());
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/UserJob/Job/get/{order_id}",1)
+        mockMvc.perform(MockMvcRequestBuilders.get("/UserJob/Job/get/{order_id}",job.getOrder_id())
                         .accept(MediaType.APPLICATION_JSON_VALUE)
                 )
                 .andExpect(status().isOk())
@@ -112,27 +122,40 @@ class JobControllerTest   {
     }
 
     @Test
-
+    @Transactional
     void getAllJobs() throws Exception {
+        JobOrder job1=jobRepository.save(Mockjob(1,"job1"));
+        User user=userRepository.save(mockUser(0,"admin"));
+        applicationRepository.save(
+                Application.builder().apply_id(user.getId()).order_id(job1.getOrder_id()).build());
 
-        jobRepository.save(Mockjob(1,"job2"));
-        userRepository.save(mockUser(0,"admin"));
-        mockMvc.perform(MockMvcRequestBuilders.get("/UserJob/Jobs/User/{user_id}",1)
+        JobOrder job2=jobRepository.save(Mockjob(1,"job2"));
+        User user2=userRepository.save(mockUser(0,"admin"));
+        applicationRepository.save(
+                Application.builder().apply_id(user2.getId()).order_id(job2.getOrder_id()).build());
+        /*jobRepository.save(Mockjob(1,"job2"));
+        userRepository.save(mockUser(0,"admin"));*/
+        mockMvc.perform(MockMvcRequestBuilders.get("/UserJob/jobs/all")
                         .accept(MediaType.APPLICATION_JSON_VALUE)
                 )
 
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].title")
-                        .value("job1"))
                 .andExpect(jsonPath("$[1].title")
+                        .value("job1"))
+                .andExpect(jsonPath("$[4].title")
                         .value("job2"))
                 .andDo(print());
             tear();
     }
 
     @Test
-
+    @Transactional
     void editJobCheckisedit() throws Exception {
+        JobOrder job=jobRepository.save(Mockjob(1,"job1"));
+        User user=userRepository.save(mockUser(0,"admin"));
+        applicationRepository.save(
+                Application.builder().apply_id(user.getId()).order_id(job.getOrder_id()).build());
+
 
         JobRequestDto requestDto=JobRequestDto.builder().order_id(1).title("updatejob").build();
         String request= objectMapper.writeValueAsString(requestDto);
@@ -151,12 +174,17 @@ class JobControllerTest   {
 
 
     @Test
-
+    @Transactional
     void showApplications() throws Exception {
+        JobOrder job=jobRepository.save(Mockjob(1,"job1"));
+        User user=userRepository.save(mockUser(0,"admin"));
+        /*applicationRepository.save(
+                Application.builder().apply_id(user.getId()).order_id(job.getOrder_id()).build());
+*/
         applicationRepository.save(Application.builder()
-                .order_id(1).apply_id(1).isaccepted(true).build());
+                .order_id(job.getOrder_id()).apply_id(user.getId()).isaccepted(true).build());
 
-        ApplicationRequest requestDto=new ApplicationRequest(1,1,0);
+        ApplicationRequest requestDto=new ApplicationRequest(job.getOrder_id(), user.getId(), 0);
         String request=objectMapper.writeValueAsString(requestDto);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/UserJob/Applications/show")
@@ -175,12 +203,18 @@ class JobControllerTest   {
 
 
     @Test
+    @Transactional
     void removeApplication() throws Exception {
-        Application BeforeRemove= applicationRepository.findById(1).orElse(null);
-        assert BeforeRemove != null;
-        Assertions.assertEquals(1,BeforeRemove.getOrder_id());
+        JobOrder job=jobRepository.save(Mockjob(1,"job1"));
+        User user=userRepository.save(mockUser(0,"admin"));
+        applicationRepository.save(
+                Application.builder().apply_id(user.getId()).order_id(job.getOrder_id()).build());
 
-        ApplicationRequest requestDto=new ApplicationRequest(1,1,1);
+        Application BeforeRemove= applicationRepository.findById(user.getId()).orElse(null);
+        assert BeforeRemove != null;
+
+
+        ApplicationRequest requestDto=new ApplicationRequest(job.getOrder_id(), user.getId(), user.getId());
         String request=objectMapper.writeValueAsString(requestDto);
 
           mockMvc.perform(MockMvcRequestBuilders.delete("/UserJob/Applications/delete")
@@ -193,7 +227,7 @@ class JobControllerTest   {
                 .andDo(print())
                 .andReturn();
 
-       Application AfterRemove= applicationRepository.findById(1).orElse(null);
+       Application AfterRemove= applicationRepository.findById(user.getId()).orElse(null);
         Assertions.assertNull(AfterRemove);
 
         tear();
@@ -201,20 +235,26 @@ class JobControllerTest   {
 
     //check if only accepted application will be return
     @Test
+    @Transactional
     void showAccept() throws Exception {
+        JobOrder job=jobRepository.save(Mockjob(1,"job1"));
+        User user=userRepository.save(mockUser(0,"admin"));
+        applicationRepository.save(
+                Application.builder().apply_id(user.getId()).order_id(job.getOrder_id()).build());
 
-        userRepository.save(mockUser(0,"Leo"));     //with id 2
-        userRepository.save(mockUser(0,"alex"));    //with id 3
+
+        User user2=userRepository.save(mockUser(0,"Leo"));     //with id 2
+        User user3=userRepository.save(mockUser(0,"alex"));    //with id 3
 
         //Admin's application with accepted
-        applicationRepository.save(Application.builder().order_id(1).apply_id(1).isaccepted(true).build());
+        applicationRepository.save(Application.builder().order_id(job.getOrder_id()).apply_id(user.getId()).isaccepted(true).build());
         //Leo's application with not accepted
-        applicationRepository.save(Application.builder().order_id(1).apply_id(2).isaccepted(false).build());
+        applicationRepository.save(Application.builder().order_id(job.getOrder_id()).apply_id(user2.getId()).isaccepted(false).build());
         //alex's application with accepted
-        applicationRepository.save(Application.builder().order_id(1).apply_id(3).isaccepted(true).build());
+        applicationRepository.save(Application.builder().order_id(job.getOrder_id()).apply_id(user3.getId()).isaccepted(true).build());
 
         //add accept
-        ApplicationRequest res=new ApplicationRequest(1,1,1);
+        ApplicationRequest res=new ApplicationRequest(job.getOrder_id(), 1,1);
         String request=objectMapper.writeValueAsString(res);
 
 
@@ -237,11 +277,17 @@ class JobControllerTest   {
         tear();
     }
     @Test
+    @Transactional
     void showApplicationshistory() throws Exception {
-        jobRepository.save(Mockjob(1,"job2title"));
-        applicationRepository.save(Application.builder().apply_id(1).order_id(2).build());
+        JobOrder job=jobRepository.save(Mockjob(1,"job1"));
+        User user=userRepository.save(mockUser(0,"admin"));
+        applicationRepository.save(
+                Application.builder().apply_id(user.getId()).order_id(job.getOrder_id()).build());
 
-        mockMvc.perform(get("/UserJob/application/history/{id}", 1)
+        JobOrder job2=jobRepository.save(Mockjob(1,"job2title"));
+        applicationRepository.save(Application.builder().apply_id(user.getId()).order_id(job2.getOrder_id()).build());
+
+        mockMvc.perform(get("/UserJob/application/history/{id}", user.getId())
                         .accept(MediaType.APPLICATION_JSON_VALUE)
                 )
                 .andExpect(status().isOk())
@@ -249,7 +295,8 @@ class JobControllerTest   {
                 .andExpect(jsonPath("$[1].title").value("job2title"))
                 .andDo(print());
 
-        userRepository.deleteById(1);
+
+        tear();
     }
 
 }

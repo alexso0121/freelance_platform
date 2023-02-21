@@ -1,0 +1,74 @@
+#This document is responsible for the documentation of each apis
+
+api-gateway (no need for token)
+1. "/signin", post , Basic Auth
+- sign in api
+- return token (String) id(int)
+
+2. "/signup", post , Body (user_info)
+- sign up
+- return token (String) id(int)
+
+3. "/decode/{token}" ,get , token=token
+-showing the details of token
+
+
+Chatroom (token ->bearer token)
+1. "/Chat/chat/post", post, Body (chatMessage)
+- save new chat message
+- return chatmessage
+- chatmessage{ id(String), order_id(int),MessageType(chat,join,leave,build),content(String), sender(String) }
+
+2. "/Chat/chat/show",get, RequestParam (order_id)
+-show new chats base on the order_id display the new room
+-list<chatmessage>
+
+Userjob (token -> bearer token)
+usercorecontroller:
+1."Userjob/CheckUser/{id}" ,get, pathvariable(id)
+-verify whether the user can post or apply a job
+-boolean
+
+2."Userjob/getProfile/{id}",get pathvariable(id)
+-get the profile of the user
+-InfoResponse{
+}
+
+3."Userjob/updateuser", put , body(user)
+-update the user detail
+-return String
+
+4."Userjob/add/user",post, body (user)
+-add the user to the db
+-return user
+
+5."Userjob/deleteuser/{id}",delete, pathvariable id
+-delete a user
+-return a string
+
+jobcontroller
+1."Userjob/Job/Post",post,body(joborder)
+-post a new job
+-return job
+
+2."Userjob/job/get/{order_id}",get,pathvariable(order_id)
+-get the info of the job
+-return the job
+
+3."Userjob/Jobs/User/{user_id}",get ,pathvariable(user_id)
+-get the jobs that are posted by the user
+-return  List<JobResponse>
+
+4."Userjob/job/edit",put,body (JobRequestDto)
+-edit the job info
+-return the edited job
+
+5."Userjob/delete/{order_ID}",delete, pathvariable (order_id)
+-remove the job
+-return String
+
+6."Userjob/jobs/all",get
+-display all the available jobs
+-return List<jobResponse>
+
+7.

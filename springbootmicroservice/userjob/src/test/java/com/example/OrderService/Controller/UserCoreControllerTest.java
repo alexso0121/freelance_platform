@@ -13,9 +13,14 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.testcontainers.containers.MySQLContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.util.ArrayList;
 
@@ -25,7 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@Testcontainers
 @AutoConfigureMockMvc
 class UserCoreControllerTest  {
 
@@ -41,7 +46,18 @@ class UserCoreControllerTest  {
 
     @Autowired
     private MockMvc mockMvc;
-/*
+    @Container
+    private static MySQLContainer container=new MySQLContainer("mysql:8.0.26")
+            ;
+
+    @DynamicPropertySource
+    public static void setProperties(DynamicPropertyRegistry dynamicPropertyRegistry){
+        dynamicPropertyRegistry.add("spring.datasource.url",container::getJdbcUrl);
+        dynamicPropertyRegistry.add("spring.datasource.username",container::getUsername);
+        dynamicPropertyRegistry.add("spring.datasource.password",container::getPassword);
+    }
+
+    /*
    *//* @BeforeTestMethod
     public void setUp(){
         System.out.println("begin");
@@ -73,10 +89,9 @@ class UserCoreControllerTest  {
 
 
     @Test
-    @Transactional
     void getProfile() throws Exception {
-        userRepository.save(mockUser());
-         mockMvc.perform(get("/UserJob/getProfile/{id}", 1)
+        User user =userRepository.save(mockUser());
+         mockMvc.perform(get("/UserJob/getProfile/{id}", user.getId())
                         .accept(MediaType.APPLICATION_JSON_VALUE)
                 )
 
@@ -86,11 +101,11 @@ class UserCoreControllerTest  {
 
                 .andDo(print());
 
-        userRepository.deleteById(1);
+
     }
     @Test
-    @Transactional
     void getUserByName() throws Exception {
+        userRepository.deleteAll();
         userRepository.save(mockUser());
         mockMvc.perform(get("/UserJob/get/Byusername/{username}", "admin")
                         .accept(MediaType.APPLICATION_JSON_VALUE)
@@ -105,15 +120,14 @@ class UserCoreControllerTest  {
                 .andReturn();
 
         Assertions.assertEquals("",whatever.getResponse().getContentAsString());
-        userRepository.deleteById(1);
+
     }
 
 
     @Test
-    @Transactional
     void updateUser() throws Exception {
-        userRepository.save(mockUser());
-        User updated=User.builder().id(1).username("alex").build();
+        User user=userRepository.save(mockUser());
+        User updated=User.builder().id(user.getId()).username("alex").build();
         String request=objectMapper.writeValueAsString(updated);
 
         MvcResult mvcResult=mockMvc.perform(MockMvcRequestBuilders.put("/UserJob/updateuser")
@@ -127,7 +141,7 @@ class UserCoreControllerTest  {
 
         Assertions.assertEquals("Successful update",mvcResult.getResponse().getContentAsString());
 
-        mockMvc.perform(get("/UserJob/getProfile/{id}", 1)
+        mockMvc.perform(get("/UserJob/getProfile/{id}", user.getId())
                         .accept(MediaType.APPLICATION_JSON_VALUE)
                 )
 
@@ -136,7 +150,7 @@ class UserCoreControllerTest  {
                         .value("alex"))
 
                 .andDo(print());
-        userRepository.deleteById(1);
+
     }
 
 

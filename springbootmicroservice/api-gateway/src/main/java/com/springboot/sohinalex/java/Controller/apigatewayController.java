@@ -27,6 +27,7 @@ public class apigatewayController  {
 
 
     }
+
     @GetMapping("/decode/{token}")
     public Jwt decode(@PathVariable String token) throws Exception {
         return tokenService.getName(token);
@@ -50,7 +51,7 @@ public Mono<AuthResponse> signup(@RequestBody user_info user) {
 }
 
 
-    @GetMapping("/login/oauth2/code/google")
+  /*  @GetMapping("/login/oauth2/code/google")
     public String loginWithGoogle(){
         return "youhavelogin";
     }
@@ -64,6 +65,6 @@ public Mono<AuthResponse> signup(@RequestBody user_info user) {
     public OAuth2User getall(@AuthenticationPrincipal OAuth2User principal){
     return principal;
     }
-
+*/
 
 }

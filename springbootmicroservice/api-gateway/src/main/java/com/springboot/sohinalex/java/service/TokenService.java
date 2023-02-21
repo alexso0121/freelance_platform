@@ -88,7 +88,7 @@ public class TokenService {
                         .build(username))
                 .retrieve()
                 .bodyToMono(user_info.class)
-                .doOnNext(res-> System.out.print(" afdasd"))
+                .doOnNext(System.out::print)
                 .doOnError(res->{
                     log.info("good");
                     Mono.just(false);
@@ -110,6 +110,8 @@ public class TokenService {
                     .switchIfEmpty(Mono.just(false))  //no user found => can register
                     .mapNotNull(res-> res
                     );
+
+
             return isuserexist
                     .switchIfEmpty(Mono.error(new Error("cant check username exist")))
                     .doOnNext(System.out::println)

@@ -18,7 +18,7 @@ import java.util.List;
 @Table(name="JobOrder")
 public class JobOrder {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue/*(strategy = GenerationType.IDENTITY)*/
     private int order_id;
     private int user_id;
     private String Title;
