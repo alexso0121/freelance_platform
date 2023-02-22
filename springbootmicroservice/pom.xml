@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <version>3.0.1</version>
+    <relativePath/> <!-- lookup parent from repository -->
+  </parent>
+
+  <groupId>com.springboot.sohinalex.java</groupId>
+  <artifactId>springbootmicroservice</artifactId>
+  <version>1.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
+
+  <name>springbootmicroservice</name>
+  <!-- FIXME change it to the project's website -->
+  <url>http://www.example.com</url>
+  <modules>
+    <module>userjob</module>
+    <module>notification</module>
+    <module>eureka-server</module>
+    <module>api-gateway</module>
+    <module>chatroom</module>
+
+  </modules>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <maven.compiler.source>1.7</maven.compiler.source>
+    <maven.compiler.target>1.7</maven.compiler.target>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.11</version>
+      <scope>test</scope>
+    </dependency>
+
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+        <configuration>
+          <excludes>
+            <exclude>
+              <groupId>org.projectlombok</groupId>
+              <artifactId>lombok</artifactId>
+            </exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+       <configuration>
+         <source>16</source>
+         <target>16</target>
+       </configuration>
+      </plugin>
+<!--     \-->
+      <!--<plugin>
+        <groupId>com.google.cloud.tools</groupId>
+        <artifactId>jib-maven-plugin</artifactId>
+        <version>3.2.1</version>
+        <configuration>
+          <from>
+            <image>openjdk:8</image>
+          </from>
+          <container>
+            <ports>
+              <port>8080</port>
+            </ports>
+            <format>OCI</format>
+          </container>
+        </configuration>
+        <executions>
+          <execution>
+            <id>push-custom-tag</id>
+            <phase>package</phase>
+            <configuration>
+              <to>
+                <image>docker.io/freelance_platform/${artifactId}:${artifactId}</image>
+              </to>
+            </configuration>
+            <goals>
+              <goal>build</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>push-latest-tag</id>
+            <phase>package</phase>
+            <configuration>
+              <to>
+                <image>docker.io/freelance_platform/${artifactId}:latest</image>
+              </to>
+            </configuration>
+            <goals>
+              <goal>build</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>-->
+    </plugins>
+
+  </build>
+
+</project>

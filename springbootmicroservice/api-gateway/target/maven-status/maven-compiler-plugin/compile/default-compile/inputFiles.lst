@@ -1,0 +1,14 @@
+C:\Users\user\Desktop\freelance_platform-main\springbootmicroservice\api-gateway\src\main\java\com\springboot\sohinalex\java\dto\SignupDto.java
+C:\Users\user\Desktop\freelance_platform-main\springbootmicroservice\api-gateway\src\main\java\com\springboot\sohinalex\java\config\AuthFilter.java
+C:\Users\user\Desktop\freelance_platform-main\springbootmicroservice\api-gateway\src\main\java\com\springboot\sohinalex\java\ApiGatewayApplication.java
+C:\Users\user\Desktop\freelance_platform-main\springbootmicroservice\api-gateway\src\main\java\com\springboot\sohinalex\java\Model\SecurityUser.java
+C:\Users\user\Desktop\freelance_platform-main\springbootmicroservice\api-gateway\src\main\java\com\springboot\sohinalex\java\config\RsaKeyProp.java
+C:\Users\user\Desktop\freelance_platform-main\springbootmicroservice\api-gateway\src\main\java\com\springboot\sohinalex\java\dto\AuthResponse.java
+C:\Users\user\Desktop\freelance_platform-main\springbootmicroservice\api-gateway\src\main\java\com\springboot\sohinalex\java\Controller\apigatewayController.java
+C:\Users\user\Desktop\freelance_platform-main\springbootmicroservice\api-gateway\src\main\java\com\springboot\sohinalex\java\service\TokenService.java
+C:\Users\user\Desktop\freelance_platform-main\springbootmicroservice\api-gateway\src\main\java\com\springboot\sohinalex\java\service\SecurityUserService.java
+C:\Users\user\Desktop\freelance_platform-main\springbootmicroservice\api-gateway\src\main\java\com\springboot\sohinalex\java\dto\NoticeRespond.java
+C:\Users\user\Desktop\freelance_platform-main\springbootmicroservice\api-gateway\src\main\java\com\springboot\sohinalex\java\config\SecurityConfig.java
+C:\Users\user\Desktop\freelance_platform-main\springbootmicroservice\api-gateway\src\main\java\com\springboot\sohinalex\java\Model\user_info.java
+C:\Users\user\Desktop\freelance_platform-main\springbootmicroservice\api-gateway\src\main\java\com\springboot\sohinalex\java\config\ReactiveAuthManger.java
+C:\Users\user\Desktop\freelance_platform-main\springbootmicroservice\api-gateway\src\main\java\com\springboot\sohinalex\java\config\webclientconfig.java
