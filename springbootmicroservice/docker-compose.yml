@@ -26,17 +26,19 @@ services:
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
 
   dbmysql:
+    volumes:
+      - /var/lib/docker/volumes/freelance_volume/_data
     image: mysql:latest
     restart: unless-stopped
+
     environment:
       MYSQL_ROOT_PASSWORD: LR4135alex*
       MYSQL_USER: admin
       MYSQL_DATABASE: freelance
 
     ports:
-      - "3306:3306"
-    volumes:
-      - freelance_volume
+      - "3307:3306"
+
 
 
 
@@ -104,7 +106,7 @@ services:
       dockerfile: Dockerfile  #docker file path (. means root directory)
     ports:
       - "8000:8000"
-    environment: { SPRING_DATASOURCE_URL: 'jdbc:mysql://dbmysql:3306/freelance' ,
+    environment: { SPRING_DATASOURCE_URL: 'jdbc:mysql://dbmysql:3307/freelance' ,
                     SPRING_PASSWORD: "LR4135alex*",
                     SPRING_USER: "admin",
                    EUREKA_CLIENT_SERVICEURL_DEFAULTZONE:  "http://eureka-server:8761/eureka"

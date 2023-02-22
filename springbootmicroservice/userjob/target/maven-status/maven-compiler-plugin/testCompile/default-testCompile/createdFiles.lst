@@ -1,0 +1,6 @@
+com\example\OrderService\AbstractIntegrationTest.class
+com\example\OrderService\Controller\UserCoreControllerTest.class
+com\example\OrderService\Service\ApplicationServiceTest.class
+com\example\OrderService\Service\UserCoreServiceTest.class
+com\example\OrderService\Service\JobServiceTest.class
+com\example\OrderService\Controller\JobControllerTest.class

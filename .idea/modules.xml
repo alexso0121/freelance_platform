@@ -5,7 +5,7 @@
       <module fileurl="file://$PROJECT_DIR$/springbootmicroservice/api-gateway/api-gateway.iml" filepath="$PROJECT_DIR$/springbootmicroservice/api-gateway/api-gateway.iml" />
       <module fileurl="file://$PROJECT_DIR$/springbootmicroservice/chatroom/chatroom.iml" filepath="$PROJECT_DIR$/springbootmicroservice/chatroom/chatroom.iml" />
       <module fileurl="file://$PROJECT_DIR$/springbootmicroservice/eureka-server/eureka-server.iml" filepath="$PROJECT_DIR$/springbootmicroservice/eureka-server/eureka-server.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/freelance_platform (copy).iml" filepath="$PROJECT_DIR$/.idea/freelance_platform (copy).iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/freelance_platform.iml" filepath="$PROJECT_DIR$/.idea/freelance_platform.iml" />
       <module fileurl="file://$PROJECT_DIR$/springbootmicroservice/notification/notification.iml" filepath="$PROJECT_DIR$/springbootmicroservice/notification/notification.iml" />
       <module fileurl="file://$PROJECT_DIR$/springbootmicroservice/springbootmicroservice.iml" filepath="$PROJECT_DIR$/springbootmicroservice/springbootmicroservice.iml" />
       <module fileurl="file://$PROJECT_DIR$/springbootmicroservice/userjob/userjob.iml" filepath="$PROJECT_DIR$/springbootmicroservice/userjob/userjob.iml" />
