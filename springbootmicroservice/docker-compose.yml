@@ -38,6 +38,16 @@ services:
     volumes:
       - freelance_volume
 
+  mongodb:
+    container_name: mongodb
+    image: mongo:latest
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - /data/db
+
+
 
 
   eureka-server:
@@ -72,10 +82,12 @@ services:
     ports:
       - "8080:8080"
     depends_on:
+      - mongodb
       - eureka-server
       - broker
     environment:
       - eureka.client.serviceUrl.defaultZone=http://eureka-server:8761/eureka
+      - spring.data.mongodb.host=mongodb
 
   chatroom:
     image: chatroom:latest
@@ -85,9 +97,12 @@ services:
     ports:
       - "8084:8084"
     depends_on:
+      - mongodb
       - eureka-server
+
     environment:
       - eureka.client.serviceUrl.defaultZone=http://eureka-server:8761/eureka
+      - spring.data.mongodb.host=mongodb
 
 
 
@@ -110,5 +125,7 @@ services:
                    EUREKA_CLIENT_SERVICEURL_DEFAULTZONE:  "http://eureka-server:8761/eureka"
 
     }
+
+
 
 

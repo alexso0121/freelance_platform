@@ -34,8 +34,8 @@ public class ChatroomController {
 
 
 
-    @GetMapping("/chat/show")
-    public Flux<ChatMessage> getChatRecords(@RequestParam String order_id){
+    @GetMapping("/chat/show/{order_id}")
+    public Flux<ChatMessage> getChatRecords(@PathVariable String order_id){
         return chatroomService.getChatRecords(Integer.parseInt(order_id));
     }
     @GetMapping("/chat/isempty/{order_id}")

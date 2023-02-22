@@ -52,24 +52,20 @@ class ChatroomControllerTest {
 
     }
 
-//    @Test
-//    void getChatRecords() {
-//        ChatMessage message1=MockMessage("admin");
-//        ChatMessage message2=MockMessage("alex");
-//
-//        when(chatroomService.getChatRecords(1)).thenReturn(Flux.just(message1,message2));
-//
-//        webClient
-//                .get().uri(uriBuilder ->
-//                        uriBuilder
-//                                .path("/Chat/chat/show")
-//                                .queryParam("order_id", 1)
-//                                .build())
-//                .exchange()
-//                .expectStatus()
-//                .isOk()
-//                .expectBody(ChatMessage.class);
-//    }
+    //@Test
+    void getChatRecords() {
+        ChatMessage message1=MockMessage("admin");
+        ChatMessage message2=MockMessage("alex");
+        when(chatroomService.getChatRecords(1)).thenReturn(Flux.just(message1,message2));
+
+        webClient
+                .get().uri("/Chat/chat/show/1")
+
+               .exchange()
+                .expectStatus()
+                .isOk()
+                .expectBody(ChatMessage.class);
+    }
 
     @Test
     void isEmpty() {

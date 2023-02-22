@@ -81,13 +81,10 @@ public class TokenService {
         return this.jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
 
     }
-    private Mono<Boolean> IsUsernameExist(String username){
-        return webClientBuilder.baseUrl("http://USERJOB").build().get()
-                .uri(uriBuilder -> uriBuilder
-                        .path("UserJob/get/Byusername/{username}")//"http://localhost:8082/Checkuser/{id}")
-                        .build(username))
-                .retrieve()
-                .bodyToMono(user_info.class)
+
+
+    public Mono<Boolean> IsUsernameExist(String username){ //convert user to boolean
+        return finduser(username)
                 .doOnNext(System.out::print)
                 .doOnError(res->{
                     log.info("good");
@@ -97,13 +94,48 @@ public class TokenService {
                 );
 
     }
+    public Mono<user_info> finduser(String username){
+        return webClientBuilder.baseUrl("http://USERJOB").build().get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("UserJob/get/Byusername/{username}")//"http://localhost:8082/Checkuser/{id}")
+                        .build(username))
+                .retrieve()
+                .bodyToMono(user_info.class);
+    }
+    public Mono<user_info> saveUser(user_info user){
+        return webClientBuilder.baseUrl("http://USERJOB").build().post()
+                .uri("UserJob/add/user")
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .body(Mono.just(user), user_info.class)
 
+                .retrieve()
+                .bodyToMono(user_info.class)       //  /add/user
+                .switchIfEmpty(Mono.error(new Error("cant save user")))
+                .doOnNext(System.out::println);
+    }
 
+    //build the authentication object
+    public Mono<Authentication> BuildAuthentication(user_info user){
+        return reactiveAuthenticationManager.authenticate(
+                        new UsernamePasswordAuthenticationToken(
+                                user.getUsername(),user.getPassword()
+                        )
+                ). switchIfEmpty(Mono.error(new Error("cant auth")))
+                .doOnNext(System.out::println);
+    }
 
-        public Mono<AuthResponse> signup(user_info user) {
+    public void sendNotice(String notification,int userid){
+        LocalDateTime myDateObj = LocalDateTime.now();
+        DateTimeFormatter myFormatObj = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+        String formattedDate = myDateObj.format(myFormatObj);
+        kafkaTemplate.send("notificationTopic",new NoticeRespond(
+                userid,formattedDate,notification
+        ));
+    }
+
+    public Mono<AuthResponse> signup(user_info user) {
 
             log.info("signup start");
-            // convert IsUserexist to boolean
 
             Mono<Boolean> isuserexist=IsUsernameExist(user.getUsername())
                     .doOnNext(System.out::println)
@@ -119,42 +151,24 @@ public class TokenService {
                     nameExist->{   //check username exist
                         if(nameExist){
                             log.info("repeated");
-                            return Mono.empty();
+                            return Mono.error(new Error("username exist"));
                         } else
                         {
                             log.info("not repeat");
                             user.setPassword(passwordEncoder.encode(user.getPassword()));    //encode the password
-                            return webClientBuilder.baseUrl("http://USERJOB").build().post()
-                                    .uri("UserJob/add/user")
-                                    .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                                    .body(Mono.just(user), user_info.class)
-
-                                    .retrieve()
-                                    .bodyToMono(user_info.class)       //  /add/user
-                                    .switchIfEmpty(Mono.error(new Error("cant save user")))
-                                    .doOnNext(System.out::println)
+                            return saveUser(user)
                                     .flatMap(
                                     savedUser->{
                                         log.info("user saved with id: "+savedUser.getId());
-                                    return   reactiveAuthenticationManager.authenticate(
-                                                new UsernamePasswordAuthenticationToken(
-                                                        user.getUsername(),user.getPassword()
-                                                )
-                                        ). switchIfEmpty(Mono.error(new Error("cant auth")))
-                                            .doOnNext(System.out::println)
-                                            .flatMap(       //generate token
-                                                auth->{     //return id and token
-                                            String token=generateToken(auth,savedUser.getId());
-                                            log.info("token generated");
+                                    return   BuildAuthentication(user)
+                                            .flatMap(
+                                                auth->{
+                                                    String token=generateToken(auth,savedUser.getId()); //generate token
+                                                    log.info("token generated");
                                                     //send signup notification
-                                                    LocalDateTime myDateObj = LocalDateTime.now();
-                                                    DateTimeFormatter myFormatObj = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
-                                                    String formattedDate = myDateObj.format(myFormatObj);
-                                                    String notification="Welcome "+savedUser.getUsername()+"! You have signed up at "+formattedDate;
-                                                    kafkaTemplate.send("notificationTopic",new NoticeRespond(
-                                                            savedUser.getId(),formattedDate,notification
-                                                    ));
-                                            return Mono.just(new AuthResponse(savedUser.getId(), token));
+                                                    String notification="Welcome "+savedUser.getUsername()+"! You have successfully signed up ";
+                                                    sendNotice(notification,savedUser.getId());
+                                                    return Mono.just(new AuthResponse(savedUser.getId(), token)); //return id and token
                                     });
                                     }
                             );
@@ -173,12 +187,7 @@ public class TokenService {
 
     public Mono<AuthResponse> signin(Authentication auth) {
         //auth
-        return webClientBuilder.baseUrl("http://USERJOB").build().get()
-                .uri(uriBuilder -> uriBuilder
-                        .path("/UserJob/get/Byusername/{username}")//"http://localhost:8082/Checkuser/{id}")
-                        .build(auth.getName()))
-                .retrieve()
-                .bodyToMono(user_info.class)
+        return finduser(auth.getName())
                 .doOnNext(user_info -> System.out.println(user_info.getPassword()))
                 .switchIfEmpty(Mono.error(new BadCredentialsException("Username not found") ))
                 .map(res->{
@@ -187,13 +196,8 @@ public class TokenService {
                         log.info("Password Match");
 
                         //send signin notice
-                        LocalDateTime myDateObj = LocalDateTime.now();
-                        DateTimeFormatter myFormatObj = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
-                        String formattedDate = myDateObj.format(myFormatObj);
-                        String notification="Welcome "+res.getUsername()+"! You have signed in at "+formattedDate;
-                        kafkaTemplate.send("notificationTopic",new NoticeRespond(
-                                res.getId(),formattedDate,notification
-                        ));
+                        String notification="Welcome "+res.getUsername()+"! You have successfully signed in ";
+                        sendNotice(notification,res.getId());
 
                         return new AuthResponse(res.getId(),generateToken(auth,res.getId()));
                     }

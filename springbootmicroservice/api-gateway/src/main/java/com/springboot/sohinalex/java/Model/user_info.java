@@ -2,13 +2,14 @@ package com.springboot.sohinalex.java.Model;
 
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-
+@Builder
 public class user_info {
 
 
