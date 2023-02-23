@@ -100,7 +100,7 @@ public class TokenService {
     }
     //find the user from the database and userjob microservice
     public Mono<user_info> finduser(String username){
-        return webClientBuilder.baseUrl("http://USERJOB").build().get()
+        return webClientBuilder.baseUrl("http://UserJob").build().get()
                 .uri(uriBuilder -> uriBuilder
                         .path("UserJob/get/Byusername/{username}")//"http://localhost:8082/Checkuser/{id}")
                         .build(username))
@@ -110,7 +110,7 @@ public class TokenService {
 
     //save the user_info to the database and userjob microservice
     public Mono<user_info> saveUser(user_info user){
-        return webClientBuilder.baseUrl("http://USERJOB").build().post()
+        return webClientBuilder.baseUrl("http://UserJob").build().post()
                 .uri("UserJob/add/user")
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .body(Mono.just(user), user_info.class)
