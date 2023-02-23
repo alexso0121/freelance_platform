@@ -34,6 +34,7 @@ public class TokenServiceTest  {
 
     }
 
+    //test when signup with username not exist in the database
     @Test
     public void testSignupSuccess() {
 
@@ -91,7 +92,7 @@ public class TokenServiceTest  {
 
     }
 
-
+    //test with match password
     @Test
     public void testSigninSuccess() {
         String correctPw="1234";
@@ -139,6 +140,8 @@ public class TokenServiceTest  {
                 .expectError();
 
     }
+
+    //test when the username not exist
     @Test
     public void testSigninNoUserFound() {
         String correctPw="1234";

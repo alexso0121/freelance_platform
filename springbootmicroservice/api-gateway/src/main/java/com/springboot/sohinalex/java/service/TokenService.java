@@ -56,10 +56,13 @@ public class TokenService {
 
         this.webClientBuilder = webClientBuilder;
     }
+
+    //convert for generating jwt token
     public String generateToken(Authentication user,int userid){
         log.info("generate token");
 
         Instant now=Instant.now();
+        //set authorities
         String scope=user.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(" "));
@@ -83,6 +86,7 @@ public class TokenService {
     }
 
 
+    //check if the username exist or not
     public Mono<Boolean> IsUsernameExist(String username){ //convert user to boolean
         return finduser(username)
                 .doOnNext(System.out::print)
@@ -94,6 +98,7 @@ public class TokenService {
                 );
 
     }
+    //find the user from the database and userjob microservice
     public Mono<user_info> finduser(String username){
         return webClientBuilder.baseUrl("http://USERJOB").build().get()
                 .uri(uriBuilder -> uriBuilder
@@ -102,6 +107,8 @@ public class TokenService {
                 .retrieve()
                 .bodyToMono(user_info.class);
     }
+
+    //save the user_info to the database and userjob microservice
     public Mono<user_info> saveUser(user_info user){
         return webClientBuilder.baseUrl("http://USERJOB").build().post()
                 .uri("UserJob/add/user")
@@ -124,6 +131,7 @@ public class TokenService {
                 .doOnNext(System.out::println);
     }
 
+    //sending notification to the user when auth success
     public void sendNotice(String notification,int userid){
         LocalDateTime myDateObj = LocalDateTime.now();
         DateTimeFormatter myFormatObj = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
@@ -133,10 +141,12 @@ public class TokenService {
         ));
     }
 
+    //sign up
     public Mono<AuthResponse> signup(user_info user) {
 
             log.info("signup start");
 
+            //convert Isusernameexist method to return either true or false
             Mono<Boolean> isuserexist=IsUsernameExist(user.getUsername())
                     .doOnNext(System.out::println)
                     .switchIfEmpty(Mono.just(false))  //no user found => can register
@@ -149,18 +159,18 @@ public class TokenService {
                     .doOnNext(System.out::println)
                     . flatMap(
                     nameExist->{   //check username exist
-                        if(nameExist){
+                        if(nameExist){  //case when the username already exist=>return error
                             log.info("repeated");
                             return Mono.error(new Error("username exist"));
-                        } else
+                        } else      //case when no username found=> can signup
                         {
                             log.info("not repeat");
                             user.setPassword(passwordEncoder.encode(user.getPassword()));    //encode the password
-                            return saveUser(user)
+                            return saveUser(user)       //saving the user information
                                     .flatMap(
                                     savedUser->{
                                         log.info("user saved with id: "+savedUser.getId());
-                                    return   BuildAuthentication(user)
+                                    return   BuildAuthentication(user)     //converting user_info object to authentication obj
                                             .flatMap(
                                                 auth->{
                                                     String token=generateToken(auth,savedUser.getId()); //generate token
@@ -185,13 +195,14 @@ public class TokenService {
     }
 
 
+    //sign in
     public Mono<AuthResponse> signin(Authentication auth) {
         //auth
-        return finduser(auth.getName())
+        return finduser(auth.getName())     //get user credential from database
                 .doOnNext(user_info -> System.out.println(user_info.getPassword()))
                 .switchIfEmpty(Mono.error(new BadCredentialsException("Username not found") ))
                 .map(res->{
-                    if(passwordEncoder.matches(auth.getCredentials().toString(),
+                    if(passwordEncoder.matches(auth.getCredentials().toString(),    //auth check
                             res.getPassword())){
                         log.info("Password Match");
 

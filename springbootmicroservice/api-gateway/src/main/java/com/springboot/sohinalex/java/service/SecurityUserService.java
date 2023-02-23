@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
+//class for converting the user class to security user class for authentication users
 @Service
 @Slf4j
 public class SecurityUserService implements ReactiveUserDetailsService {
@@ -28,7 +29,7 @@ public class SecurityUserService implements ReactiveUserDetailsService {
 
             log.info("get user");
 
-        //return userRespository.findByyUsername(username)
+
         return  webClientBuilder.baseUrl("http://USERJOB").build().get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/UserJob/get/Byusername/{username}")//"http://localhost:8082/Checkuser/{id}")

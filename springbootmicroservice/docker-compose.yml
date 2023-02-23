@@ -36,7 +36,7 @@ services:
       MYSQL_PASSWORD: "password"
 
     ports:
-      - "3306:3306"
+      - "3307:3307"
     volumes:
       - /var/lib/docker/volumes/freelance_volume/_data
 
@@ -49,12 +49,19 @@ services:
     volumes:
       - /data/db
 
+  zipkin:
+    image: openzipkin/zipkin
+    container_name: zipkin
+    ports:
+        - "9411:9411"
 
 
 
   eureka-server:
     image: eureka:latest
     container_name: eureka-server
+    depends_on:
+      - zipkin
     build:
       context: eureka-server/.
       dockerfile: Dockerfile.layered
@@ -63,6 +70,8 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - LOGGING_LEVEL_ROOT=debug
+      - spring.zipkin.base-url=http://zipkin:9411
+
 
   api-gateway:
     image: api-gateway:latest
@@ -73,8 +82,11 @@ services:
       - "8081:8081"
     depends_on:
       - eureka-server
+      - zipkin
     environment:
       - eureka.client.serviceUrl.defaultZone=http://eureka-server:8761/eureka
+      - spring.zipkin.base-url=http://zipkin:9411
+
 
   notification:
     image: notification:latest
@@ -87,10 +99,13 @@ services:
       - mongodb
       - eureka-server
       - broker
+      - zipkin
     environment:
       - eureka.client.serviceUrl.defaultZone=http://eureka-server:8761/eureka
       - spring.data.mongodb.host=mongodb
       - spring.kafka.bootstrap-servers=broker:29092
+      - spring.zipkin.base-url=http://zipkin:9411
+
 
   chatroom:
     image: chatroom:latest
@@ -102,12 +117,12 @@ services:
     depends_on:
       - mongodb
       - eureka-server
+      - zipkin
 
     environment:
       - eureka.client.serviceUrl.defaultZone=http://eureka-server:8761/eureka
       - spring.data.mongodb.host=mongodb
-
-
+      - spring.zipkin.base-url=http://zipkin:9411
 
 
 
@@ -115,6 +130,7 @@ services:
     depends_on:
       - dbmysql
       - eureka-server
+      - zipkin
     image: userjob:latest
     container_name: userjob
     build:
@@ -123,11 +139,13 @@ services:
     ports:
       - "8000:8000"
     environment:
-    - spring.datasource.url=jdbc:mysql://dbmysql:3306/freelance
+    - spring.datasource.url=jdbc:mysql://dbmysql:3307/freelance
     - spring.datasource.username=root
     - spring.datasource.password=password
     - log.level.root=debug
     - eureka.client.serviceUrl.defaultZone=http://eureka-server:8761/eureka
+    - spring.zipkin.base-url=http://zipkin:9411
+
 
 
 
