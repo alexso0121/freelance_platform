@@ -71,7 +71,8 @@ class UserCoreControllerTest  {
 */
     private User mockUser(){
 
-      User user=User.builder().id(1).username("admin").password("admin").build();
+      User user=User.builder().id(1).username("admin")
+              .password("admin").Address_id(1).build();
         return user;
     }
 
@@ -170,7 +171,9 @@ class UserCoreControllerTest  {
                 .content(request)
                 .accept(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.username").value("tom"));
+                .andExpect(jsonPath("$.username").value("tom"))
+                .andExpect(jsonPath("$.address").value("Island"))
+                .andDo(print());
         userRepository.deleteById(1);
     }
 

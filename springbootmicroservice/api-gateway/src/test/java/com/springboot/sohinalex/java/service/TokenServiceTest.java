@@ -2,6 +2,7 @@ package com.springboot.sohinalex.java.service;
 
 import com.springboot.sohinalex.java.Model.user_info;
 import com.springboot.sohinalex.java.dto.AuthResponse;
+import com.springboot.sohinalex.java.dto.SignupDto;
 import junit.framework.TestCase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -40,17 +41,22 @@ public class TokenServiceTest  {
 
         TokenService Spy= spy(tokenService);
         user_info user=user_info.builder().id(1).username("alex").password("1234").build();
+        SignupDto signupDto=SignupDto.builder().username("alex").password("1234").build();
 
-        doReturn(Mono.empty()).when(Spy).finduser("alex");  //no user with username found
+
+        doReturn(Mono.empty()).when(Spy).finduser("alex");
+       //no user with username found
         when(passwordEncoder.encode("1234")).thenReturn("encode1234");
         doReturn("token").when(Spy).generateToken(any(),eq(1));
+
         doNothing().when(Spy).sendNotice("Welcome alex! You have successfully signed up ",1);
-        user_info encodeuser=user_info.builder().id(1).username("alex").password("encode1234").build();
+        SignupDto encodeuser=SignupDto.builder().username("alex").password("encode1234").build();
 
-        doReturn(Mono.just(new UsernamePasswordAuthenticationToken("alex","encode1234"))).when(Spy).BuildAuthentication(encodeuser);
-        doReturn(Mono.just(user)).when(Spy).saveUser(user);
+        doReturn(Mono.just(new UsernamePasswordAuthenticationToken("alex","encode1234"))).when(Spy)
+                .BuildAuthentication(tokenService.SignupDtoTouserInfo(encodeuser));
+        doReturn(Mono.just(user)).when(Spy).saveUser(any());
 
-        Mono<AuthResponse> res=Spy.signup(user);
+        Mono<AuthResponse> res=Spy.signup(signupDto);
         StepVerifier
                 .create(res)
                 .consumeNextWith(
@@ -75,6 +81,9 @@ public class TokenServiceTest  {
         TokenService Spy= spy(tokenService);
         user_info user=user_info.builder().id(1).username("alex").password("1234").build();
 
+        SignupDto signupDto=SignupDto.builder().username("alex").password("1234").build();
+
+
         doReturn(Mono.just(user)).when(Spy).finduser("alex"); //if username is already exist
         when(passwordEncoder.encode("1234")).thenReturn("encode1234");
         doReturn("token").when(Spy).generateToken(any(),eq(1));
@@ -82,15 +91,16 @@ public class TokenServiceTest  {
         user_info encodeuser=user_info.builder().id(1).username("alex").password("encode1234").build();
 
         doReturn(Mono.just(new UsernamePasswordAuthenticationToken("alex","encode1234"))).when(Spy).BuildAuthentication(encodeuser);
-        doReturn(Mono.just(user)).when(Spy).saveUser(user);
+        doReturn(Mono.just(user)).when(Spy).saveUser(any());
 
-        Mono<AuthResponse> res=Spy.signup(user);
+        Mono<AuthResponse> res=Spy.signup(signupDto);
         StepVerifier
                 .create(res)
                 .expectError();
 
-
     }
+
+
 
     //test with match password
     @Test

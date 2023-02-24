@@ -106,11 +106,11 @@ public class ApplicationService {
     public Boolean TooMuchApplication(int apply_id){
         List<Application> ApplicationList = applicationRepository.findByApply_id(apply_id);
         if(ApplicationList.size()<=20){
-                String notification="You have already send to much of applications.Please delete some and try again";
-            sendNotice(notification, apply_id);
             return false;
-            }
-            return true;
+        }
+        String notification="You have already send to much of applications.Please delete some and try again";
+        sendNotice(notification, apply_id);
+        return true;
 
         }
 
@@ -138,6 +138,11 @@ public class ApplicationService {
        if(applicationNumber-1==0){
            jobOrder.setClosed(true);
            sendNotice("You have recruited enough amount of employee!The job will be closed",jobOrder.getUser_id());
+           String username=userCoreService.findById(jobOrder.getUser_id()).getUsername();
+           ChatMessage Joinmessage=new ChatMessage(null,jobOrder.getOrder_id(), ChatMessage.MessageType.BUILD,
+                   username+" has built the room",
+                   username,null);
+           generateChat(Joinmessage);
        }
          jobRepository.save(jobOrder);
        return jobOrder;
@@ -182,6 +187,7 @@ public class ApplicationService {
                 username+" has join the room",
                 username,null);
         generateChat(Joinmessage);
+
         return userCoreService.getProfile(applyId);
 
     }

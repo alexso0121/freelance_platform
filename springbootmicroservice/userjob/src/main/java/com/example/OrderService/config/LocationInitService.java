@@ -1,4 +1,4 @@
-package com.example.OrderService.Service;
+package com.example.OrderService.config;
 
 import com.example.OrderService.Entity.Location;
 import com.example.OrderService.Repository.LocationRepository;

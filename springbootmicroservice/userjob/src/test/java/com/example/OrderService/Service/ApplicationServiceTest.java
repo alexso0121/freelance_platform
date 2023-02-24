@@ -74,10 +74,28 @@ class ApplicationServiceTest {
 
     }
     @Test
-    void toomuchJobs(){
-
+    void NottoomuchJobs(){
+        Application singleApplication=Application.builder().order_id(1)
+                        .apply_id(1).build();
+      when(applicationRepository.findByApply_id(1)).thenReturn(List.of( singleApplication));
+      Boolean res=applicationService.TooMuchApplication(1);
+      Assertions.assertEquals(false,res);
     }
 
+    @Test
+    void toomuchJobs(){
+        ApplicationService Spy=spy(applicationService);
+        Application singleApplication=Application.builder().order_id(1)
+                .apply_id(1).build();
+        List<Application> applicationList=new ArrayList<>();
+        for(int i=0;i<=20;i++){
+            applicationList.add(singleApplication);
+        }
+        doNothing().when(Spy).sendNotice(any(),eq(1));
+        when(applicationRepository.findByApply_id(1)).thenReturn(applicationList);
+        Boolean res=Spy.TooMuchApplication(1);
+        Assertions.assertEquals(true,res);
+    }
 
     private User mockUser(String Username){
        return User.builder().username(Username).build();
@@ -120,6 +138,7 @@ class ApplicationServiceTest {
 
 
         JobOrder res=applicationService.HandleRemain_number(job);
+
         Assertions.assertEquals(9,res.getApplication_number());
 
     }
@@ -128,9 +147,11 @@ class ApplicationServiceTest {
     void HandleIfNoRemainNumber(){
         ApplicationService Spy=spy(applicationService);
         JobOrder job= JobOrder.builder().user_id(1).order_id(1).application_number(1).build();
+        User user= User.builder().id(1).username("admin").build();
 
-
+        when(userCoreService.findById(1)).thenReturn(user);
         doNothing().when(Spy).sendNotice("You have recruited enough amount of employee!The job will be closed",1);
+        doNothing().when(Spy).generateChat(any());
 
         JobOrder res=Spy.HandleRemain_number(job);
         Assertions.assertEquals(true,res.isClosed());

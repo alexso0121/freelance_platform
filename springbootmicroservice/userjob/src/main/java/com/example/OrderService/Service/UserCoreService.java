@@ -15,11 +15,14 @@ import java.util.Objects;
 public class UserCoreService {
 
     private final UserRepository userRespository;
+    private final LocationService locationService;
 
 
-    public UserCoreService(UserRepository userRespository) {
+
+    public UserCoreService(UserRepository userRespository, LocationService locationService) {
         this.userRespository = userRespository;
 
+        this.locationService = locationService;
     }
 
     //check user can post/apply base on the score
@@ -93,6 +96,10 @@ public class UserCoreService {
     public User saveAndReturn(User user) {
 
         return userRespository.save(user);
+    }
+    public User sigup(User user){
+        user.setAddress(locationService.getLocation(user.getAddress_id()));
+        return saveAndReturn(user);
     }
     //update application list in user
 

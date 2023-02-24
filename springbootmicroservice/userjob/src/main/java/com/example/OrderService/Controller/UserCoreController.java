@@ -60,7 +60,7 @@ public class UserCoreController {
     //sign up
     @PostMapping("/add/user")
     public User addUser(@RequestBody User user){
-        return userCoreservice.saveAndReturn(user);
+        return userCoreservice.sigup(user);
     }
 
     //delete the user

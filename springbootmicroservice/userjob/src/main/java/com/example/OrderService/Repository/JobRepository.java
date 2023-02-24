@@ -14,9 +14,9 @@ public interface JobRepository extends JpaRepository<JobOrder, Integer> {
      @Query(
              value = "SELECT * "+
                      " FROM job_order " +
-                     " WHERE title= ?1 AND organization=?2 ;",nativeQuery = true
+                     " WHERE title= ?1 AND user_id=?2 ;",nativeQuery = true
      )
-     JobOrder findByTitleAndOrganization(String title,String organization);
+     JobOrder findByTitleAnduser(String title,int user_id);
 
      @Query(
              value = "SELECT *"+

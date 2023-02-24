@@ -2,7 +2,6 @@ package com.example.OrderService.Service;
 
 
 import com.example.OrderService.Entity.JobOrder;
-import com.example.OrderService.Entity.User;
 import com.example.OrderService.Repository.ApplicationRepository;
 import com.example.OrderService.Repository.JobRepository;
 import com.example.OrderService.Repository.LocationRepository;
@@ -40,15 +39,17 @@ public class JobService {
 
     private final KafkaTemplate<String, NoticeRespond> kafkaTemplate;
 
+    private final LocationService locationService;
 
 
-    public JobService(JobRepository jobRepository, ApplicationRepository applicationRepository, LocationRepository locationRepository, @Lazy UserCoreService userCoreService, KafkaTemplate<String, NoticeRespond> kafkaTemplate) {
+
+    public JobService(JobRepository jobRepository, ApplicationRepository applicationRepository, LocationRepository locationRepository, @Lazy UserCoreService userCoreService, KafkaTemplate<String, NoticeRespond> kafkaTemplate, LocationService locationService) {
         this.jobRepository = jobRepository;
         this.applicationRepository = applicationRepository;
         this.locationRepository = locationRepository;
         this.userCoreService = userCoreService;
         this.kafkaTemplate = kafkaTemplate;
-
+        this.locationService = locationService;
     }
 
 
@@ -62,7 +63,7 @@ public class JobService {
         int user_id=jobOrder.getUser_id();
 
         //convert the address_id to region base on the 18 district in hk
-        jobOrder.setRegion(getLocation(jobOrder.getAddress_id()));
+        jobOrder.setRegion(locationService.getLocation(jobOrder.getAddress_id()));
         JobOrder job=jobRepository.save(jobOrder);
 
         //send notification to the poster
@@ -75,7 +76,7 @@ public class JobService {
     //check whether the user can post a job
     public Boolean VerifyCanPost(JobOrder jobOrder){
         //prevent repeat of job
-        if(checkif_JobAlreadyExist(jobOrder.getTitle(),jobOrder.getOrganization())){
+        if(checkif_JobAlreadyExist(jobOrder.getTitle(),jobOrder.getUser_id())){
             log.info("job already exist");
             return false;
         }
@@ -120,8 +121,8 @@ public class JobService {
     }
 
     //check if the job's with same title and organisation already exist
-    public Boolean checkif_JobAlreadyExist(String title,String organization){
-        JobOrder jobOrder= jobRepository.findByTitleAndOrganization(title,organization);
+    public Boolean checkif_JobAlreadyExist(String title,int user_id){
+        JobOrder jobOrder= jobRepository.findByTitleAnduser(title,user_id);
         return jobOrder != null;
     }
 
@@ -141,16 +142,15 @@ public class JobService {
         savejob.setRequirement(jobRequestDto.getRequirement());
         savejob.setSalary(jobRequestDto.getSalary());
         savejob.setAddress_id(jobRequestDto.getAddress_id());
-        savejob.setRegion(getLocation(savejob.getAddress_id()));
-        JobOrder savedjob=jobRepository.save(savejob);
+        savejob.setRegion(locationService.getLocation(jobRequestDto.getAddress_id()));
+        savejob.setApplication_number(jobRequestDto.getApplication_number());
+        jobRepository.save(savejob);
 
-        return GetSingleJob(savedjob);
+        return GetSingleJob(savejob);
     }
 
     //get the location base on the address id
-    private String getLocation(int address_id){
-        return locationRepository.getLocation(address_id);
-    }
+
 
 
 

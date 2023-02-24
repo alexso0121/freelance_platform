@@ -4,6 +4,7 @@ package com.springboot.sohinalex.java.Controller;
 import com.springboot.sohinalex.java.Model.user_info;
 import com.springboot.sohinalex.java.dto.AuthResponse;
 
+import com.springboot.sohinalex.java.dto.SignupDto;
 import com.springboot.sohinalex.java.service.TokenService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
@@ -43,7 +44,7 @@ public class apigatewayController  {
 
 
 @PostMapping("/signup")
-public Mono<AuthResponse> signup(@RequestBody user_info user) {
+public Mono<AuthResponse> signup(@RequestBody SignupDto user) {
     return tokenService.signup(user);
 
 

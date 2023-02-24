@@ -4,6 +4,7 @@ import com.example.OrderService.Entity.JobOrder;
 import com.example.OrderService.Repository.ApplicationRepository;
 import com.example.OrderService.Repository.JobRepository;
 import com.example.OrderService.Repository.LocationRepository;
+import com.example.OrderService.dto.JobRequestDto;
 import com.example.OrderService.dto.JobResponse;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -14,6 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import static org.mockito.Mockito.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
 class JobServiceTest {
@@ -32,6 +34,9 @@ class JobServiceTest {
     @Mock
     private ApplicationRepository applicationRepository;
 
+    @Mock
+    private LocationService locationService;
+
 
     @Test
     void postValidJob() throws IllegalAccessException {
@@ -40,13 +45,36 @@ class JobServiceTest {
                 .title("demo").region("Yuen Long").build();
         JobService Spy=spy(jobService);
 
-        when(jobRepository.findByTitleAndOrganization(any(),any())).thenReturn(null);
+        when(jobRepository.findByTitleAnduser(any(),eq(1))).thenReturn(null);
         when(userCoreService.VerifyCanOrder(1)).thenReturn(true);
         when(locationRepository.getLocation(1)).thenReturn("Yuen Long");
         when(jobRepository.save(any())).thenReturn(jobOrder);
         doNothing().when(Spy).sendNotice("The Job with order id (1) has successfully posted !",1);
 
         Assertions.assertEquals(ans,Spy.postJob(jobOrder));
+    }
+    @Test
+    void postRepeatTitleJob() throws IllegalAccessException {
+        JobOrder jobOrder=JobOrder.builder().order_id(1).user_id(1).Title("demo").address_id(1).build();
+
+        JobService Spy=spy(jobService);
+
+        when(jobRepository.findByTitleAnduser(any(),eq(1))).thenReturn(jobOrder);
+
+
+        Assertions.assertEquals(null,Spy.postJob(jobOrder));
+    }
+    @Test
+    void postIfUserScoreTooLow() throws IllegalAccessException {
+        JobOrder jobOrder=JobOrder.builder().order_id(1).user_id(1).Title("demo").address_id(1).build();
+
+        JobService Spy=spy(jobService);
+
+        when(userCoreService.VerifyCanOrder(1)).thenReturn(false);
+        doNothing().when(Spy).sendNotice("You cannot post job since your credit is too low",1);
+
+
+        Assertions.assertEquals(null,Spy.postJob(jobOrder));
     }
 
     @Test
@@ -59,6 +87,36 @@ class JobServiceTest {
         List<JobResponse> res=jobService.getRegionJobs(1);
         Assertions.assertEquals(jobService.GetSingleJob(job1),res.get(0));
         Assertions.assertEquals(2,res.size());
+
+    }
+
+    @Test
+    void editJob(){
+        JobOrder jobB4Edit=JobOrder.builder()
+                .Title("job1")
+                .date("today")
+                .organization("org")
+                .order_id(1).build();
+        JobRequestDto requestDto=JobRequestDto.builder().order_id(1)
+                .user_id(1).title("updateJob").requirement("req")
+                .application_number(2)
+                .contact("1").salary(123).address_id(2)
+                .description("des").build();
+        JobResponse expectedRes=JobResponse.builder().order_id(1)
+                .title("updateJob").requirement("req")
+                .application_number(2)
+                .organization("org")
+                .date("today")
+                .salary(123).region("Island")
+                .description("des").build();
+
+        JobService Spy=spy(jobService);
+        when(jobRepository.findById(1)).thenReturn(Optional.ofNullable(jobB4Edit));
+        when(jobRepository.save(any())).thenReturn(null);
+        when(locationService.getLocation(2)).thenReturn("Island");
+
+        JobResponse res=Spy.editJob(requestDto);
+        Assertions.assertEquals(expectedRes,res);
 
     }
 
@@ -76,9 +134,7 @@ class JobServiceTest {
         Assertions.assertEquals(1,res.size());
     }
 
-    @Test
-    void findByOrderid() {
-    }
+
 
 
 }

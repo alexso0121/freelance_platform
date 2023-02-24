@@ -72,4 +72,15 @@ class UserCoreServiceTest {
         Assertions.assertEquals(true,res);
 
     }
+    @Test
+    void CannotOrder() {
+        User user=mockUser("admin");
+        user.setScore(1.9);
+        when(userRepository.findById(1)).thenReturn(Optional.ofNullable(user));
+
+        Boolean res=userCoreService.VerifyCanOrder(1);
+
+        Assertions.assertEquals(false,res);
+
+    }
 }

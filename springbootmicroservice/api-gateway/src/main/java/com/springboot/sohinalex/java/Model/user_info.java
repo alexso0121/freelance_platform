@@ -12,26 +12,22 @@ import lombok.NoArgsConstructor;
 @Builder
 public class user_info {
 
-
+   
     private int id;
     private String username;
     private String password;
     private String fullName;
     private String email;
-
+    private String address;
     private String skill_set;
 
     private String contact;
     private String cv;
-    private int Address_id;
-
-    private String address;
-
 
     private String role;
 
     private double score=3.0;
 
-
+    private int Address_id;
 
 }

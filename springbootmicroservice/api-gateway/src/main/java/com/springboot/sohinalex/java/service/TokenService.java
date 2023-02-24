@@ -3,6 +3,7 @@ package com.springboot.sohinalex.java.service;
 import com.springboot.sohinalex.java.Model.user_info;
 import com.springboot.sohinalex.java.dto.AuthResponse;
 import com.springboot.sohinalex.java.dto.NoticeRespond;
+import com.springboot.sohinalex.java.dto.SignupDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -57,6 +58,20 @@ public class TokenService {
         this.webClientBuilder = webClientBuilder;
     }
 
+    //convert signupDto to user_info class
+    public user_info SignupDtoTouserInfo(SignupDto signupDto){
+        return user_info.builder()
+                .username(signupDto.getUsername())
+                .password(signupDto.getPassword())
+                .fullName(signupDto.getFullName())
+                .email(signupDto.getEmail())
+                .skill_set(signupDto.getSkill_set())
+                .contact(signupDto.getContact())
+                .cv(signupDto.getCv())
+                .Address_id(signupDto.getAddress_id()).build();
+
+
+    }
     //convert for generating jwt token
     public String generateToken(Authentication user,int userid){
         log.info("generate token");
@@ -74,7 +89,7 @@ public class TokenService {
         JwtClaimsSet claims=JwtClaimsSet.builder()
                 .issuer("http://localhost:8080")
                 .issuedAt(now)
-                .expiresAt(now.plus(2, ChronoUnit.HOURS))
+                .expiresAt(now.plus(3, ChronoUnit.HOURS))
                 .subject(user.getName())
                 .id(String.valueOf(userid))
                 .claim("scope",scope)
@@ -110,6 +125,7 @@ public class TokenService {
 
     //save the user_info to the database and userjob microservice
     public Mono<user_info> saveUser(user_info user){
+
         return webClientBuilder.baseUrl("http://UserJob").build().post()
                 .uri("UserJob/add/user")
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
@@ -142,7 +158,7 @@ public class TokenService {
     }
 
     //sign up
-    public Mono<AuthResponse> signup(user_info user) {
+    public Mono<AuthResponse> signup(SignupDto user) {
 
             log.info("signup start");
 
@@ -166,11 +182,11 @@ public class TokenService {
                         {
                             log.info("not repeat");
                             user.setPassword(passwordEncoder.encode(user.getPassword()));    //encode the password
-                            return saveUser(user)       //saving the user information
+                            return saveUser(SignupDtoTouserInfo(user))       //saving the user information
                                     .flatMap(
                                     savedUser->{
                                         log.info("user saved with id: "+savedUser.getId());
-                                    return   BuildAuthentication(user)     //converting user_info object to authentication obj
+                                    return   BuildAuthentication(SignupDtoTouserInfo(user)  )   //converting user_info object to authentication obj
                                             .flatMap(
                                                 auth->{
                                                     String token=generateToken(auth,savedUser.getId()); //generate token
