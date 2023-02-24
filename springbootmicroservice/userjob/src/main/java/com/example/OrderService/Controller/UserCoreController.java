@@ -2,10 +2,10 @@ package com.example.OrderService.Controller;
 
 
 import com.example.OrderService.Entity.User;
+import com.example.OrderService.Repository.UserRepository;
 import com.example.OrderService.Service.JobService;
 import com.example.OrderService.Service.UserCoreService;
 import com.example.OrderService.dto.InfoResponse;
-import com.example.OrderService.dto.JobResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,13 +20,14 @@ public class UserCoreController {
 
     private final UserCoreService userCoreservice;
 
-    private final JobService jobService;
+    private final UserRepository userRepository;
 
-    public UserCoreController(UserCoreService userCoreservice, JobService jobService) {
+    public UserCoreController(UserCoreService userCoreservice, UserRepository userRepository) {
         this.userCoreservice = userCoreservice;
+        this.userRepository = userRepository;
 
 
-        this.jobService = jobService;
+
     }
 
     //check whether the user can post/apply a job or not base on their score (credit)
@@ -68,6 +69,12 @@ public class UserCoreController {
     public String deleteUser(@PathVariable int id){
         log.info("Deleted user id: '{}",id);
         return userCoreservice.Delete(id);
+    }
+
+    //display all data in user table
+    @GetMapping("/admin/Users/all")
+    public List<User> showallUsers(){
+        return userRepository.findAll();
     }
 
 

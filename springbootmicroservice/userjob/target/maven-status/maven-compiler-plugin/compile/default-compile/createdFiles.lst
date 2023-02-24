@@ -5,6 +5,7 @@ com\example\OrderService\OrderServiceApplication.class
 com\example\OrderService\dto\NoticeRespond.class
 com\example\OrderService\Controller\JobController.class
 com\example\OrderService\Entity\Application$ApplicationBuilder.class
+com\example\OrderService\config\LocationInitService.class
 com\example\OrderService\Controller\UserCoreController.class
 com\example\OrderService\Repository\ApplicationRepository.class
 com\example\OrderService\Entity\User$UserBuilder.class
@@ -16,9 +17,9 @@ com\example\OrderService\Repository\JobRepository.class
 com\example\OrderService\dto\JobResponse$JobResponseBuilder.class
 com\example\OrderService\dto\JobRequestDto.class
 com\example\OrderService\Entity\Application.class
-com\example\OrderService\Service\LocationInitService.class
 com\example\OrderService\config\TraceConfig.class
 com\example\OrderService\Entity\User.class
+com\example\OrderService\Service\LocationService.class
 com\example\OrderService\config\TraceConfig$1.class
 com\example\OrderService\Service\JobService.class
 com\example\OrderService\dto\ChatMessage.class

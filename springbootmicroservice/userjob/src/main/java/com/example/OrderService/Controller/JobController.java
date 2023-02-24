@@ -85,43 +85,13 @@ public class JobController {
         return jobService.getRegionJobs(address_id);
     }
 
-    //sending application to a specific job
-    @PostMapping("/job/apply")
-    //user_id apply for the job
-    public String Applyjob(@RequestBody ApplicationRequest applyjobdto) {
-        return applicationService.Applyjob(applyjobdto.getOrder_id()
-                ,applyjobdto.getPoster_id(),applyjobdto.getApply_id());
+
+
+    //get all data in the job table
+    @GetMapping("/admin/jobs/all")
+    public List<JobOrder> DisplayallJob(){
+        return jobRepository.findAll();
     }
 
 
-    //-access the user profile of the applications
-    //-only the poster are permitted use this api
-    @PostMapping("/Applications/show")
-    public List<InfoResponse> showApplications(@RequestBody ApplicationRequest dto) {
-        return applicationService.showApplications(dto.getOrder_id(), dto.getPoster_id());
-    }
-
-    //the poster accept application
-    //only the poster are permitted use this api
-    @PutMapping("/Applications/accept")
-    public InfoResponse acceptApplication (@RequestBody ApplicationRequest dto){
-        return applicationService.acceptApplication(dto.getOrder_id(), dto.getPoster_id(), dto.getApply_id());
-    }
-
-    //delete the application
-    @DeleteMapping("/Applications/delete")
-    public String RemoveApplication(@RequestBody ApplicationRequest dto){
-        return applicationService.deleteApplication(dto.getOrder_id(),dto.getApply_id());
-    }
-
-    //the job poster accept the application
-    @PostMapping("/Accept/show")        //need check
-    public List<InfoResponse> showAccept(@RequestBody ApplicationRequest dto) {
-        return applicationService.showAccepted(dto.getOrder_id(), dto.getPoster_id());
-    }
-    //show the number of jobs the user has applied
-    @GetMapping("/application/history/{id}")
-    public List<JobResponse> showApplicationshistory(@PathVariable int id){
-        return applicationService.showApplicationsToUser(id);
-    }
 }

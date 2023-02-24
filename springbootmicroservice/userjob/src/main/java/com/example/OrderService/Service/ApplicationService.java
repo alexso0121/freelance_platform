@@ -70,7 +70,9 @@ public class ApplicationService {
 
         //check if the user have already applied the job
         Application saved=applicationRepository.findByApply_idAndOrder_id(apply_id,order_id);
-        assert saved==null;
+        if(saved!=null){
+            return "you have already applied the job";
+        }
 
         log.info("verify success");
 
@@ -182,7 +184,7 @@ public class ApplicationService {
 
         //handle chat message
         log.info("Start sending chat");
-        String username=userCoreService.findById(posterId).getUsername();
+        String username=userCoreService.findById(applyId).getUsername();
         ChatMessage Joinmessage=new ChatMessage(null,orderId, ChatMessage.MessageType.JOIN,
                 username+" has join the room",
                 username,null);
@@ -227,7 +229,7 @@ public class ApplicationService {
         }
         applicationRepository.deleteById(application.getApplication_id());
 
-        return "you have successfully removed";
+        return "you have successfully removed the application";
 
 
 }

@@ -4,10 +4,10 @@ C:\Users\user\Desktop\freelance_platform-main\springbootmicroservice\userjob\src
 C:\Users\user\Desktop\freelance_platform-main\springbootmicroservice\userjob\src\main\java\com\example\OrderService\config\TraceConfig.java
 C:\Users\user\Desktop\freelance_platform-main\springbootmicroservice\userjob\src\main\java\com\example\OrderService\Service\UserCoreService.java
 C:\Users\user\Desktop\freelance_platform-main\springbootmicroservice\userjob\src\main\java\com\example\OrderService\Entity\Application.java
+C:\Users\user\Desktop\freelance_platform-main\springbootmicroservice\userjob\src\main\java\com\example\OrderService\Service\LocationService.java
 C:\Users\user\Desktop\freelance_platform-main\springbootmicroservice\userjob\src\main\java\com\example\OrderService\dto\JobRequestDto.java
 C:\Users\user\Desktop\freelance_platform-main\springbootmicroservice\userjob\src\main\java\com\example\OrderService\Repository\UserRepository.java
 C:\Users\user\Desktop\freelance_platform-main\springbootmicroservice\userjob\src\main\java\com\example\OrderService\dto\ChatMessage.java
-C:\Users\user\Desktop\freelance_platform-main\springbootmicroservice\userjob\src\main\java\com\example\OrderService\Service\LocationInitService.java
 C:\Users\user\Desktop\freelance_platform-main\springbootmicroservice\userjob\src\main\java\com\example\OrderService\Entity\JobOrder.java
 C:\Users\user\Desktop\freelance_platform-main\springbootmicroservice\userjob\src\main\java\com\example\OrderService\dto\JobResponse.java
 C:\Users\user\Desktop\freelance_platform-main\springbootmicroservice\userjob\src\main\java\com\example\OrderService\Repository\JobRepository.java
@@ -21,3 +21,4 @@ C:\Users\user\Desktop\freelance_platform-main\springbootmicroservice\userjob\src
 C:\Users\user\Desktop\freelance_platform-main\springbootmicroservice\userjob\src\main\java\com\example\OrderService\OrderServiceApplication.java
 C:\Users\user\Desktop\freelance_platform-main\springbootmicroservice\userjob\src\main\java\com\example\OrderService\Controller\UserCoreController.java
 C:\Users\user\Desktop\freelance_platform-main\springbootmicroservice\userjob\src\main\java\com\example\OrderService\Service\ApplicationService.java
+C:\Users\user\Desktop\freelance_platform-main\springbootmicroservice\userjob\src\main\java\com\example\OrderService\config\LocationInitService.java

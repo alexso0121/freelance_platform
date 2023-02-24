@@ -99,6 +99,7 @@ public class UserCoreService {
     }
     public User sigup(User user){
         user.setAddress(locationService.getLocation(user.getAddress_id()));
+        log.info(user.getAddress());
         return saveAndReturn(user);
     }
     //update application list in user

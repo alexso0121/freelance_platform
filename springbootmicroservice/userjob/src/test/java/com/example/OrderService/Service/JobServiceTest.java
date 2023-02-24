@@ -47,7 +47,7 @@ class JobServiceTest {
 
         when(jobRepository.findByTitleAnduser(any(),eq(1))).thenReturn(null);
         when(userCoreService.VerifyCanOrder(1)).thenReturn(true);
-        when(locationRepository.getLocation(1)).thenReturn("Yuen Long");
+        when(locationService.getLocation(1)).thenReturn("Yuen Long");
         when(jobRepository.save(any())).thenReturn(jobOrder);
         doNothing().when(Spy).sendNotice("The Job with order id (1) has successfully posted !",1);
 

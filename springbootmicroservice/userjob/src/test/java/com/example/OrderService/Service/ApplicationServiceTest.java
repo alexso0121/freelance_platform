@@ -8,6 +8,7 @@ import com.example.OrderService.Repository.JobRepository;
 import com.example.OrderService.Repository.UserRepository;
 import com.example.OrderService.dto.InfoResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.Assert;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -52,6 +53,15 @@ class ApplicationServiceTest {
         MockitoAnnotations.openMocks(this);
     }*/
 
+    private User mockUser(String Username){
+        return User.builder().username(Username).build();
+    }
+    private Application mockDashBroad(Boolean isaccepted){
+        if (isaccepted){
+            return Application.builder().order_id(1).apply_id(1).isaccepted(true).build() ;}
+        return Application.builder().order_id(1).apply_id(1).isaccepted(true).build();
+    }
+
 
     @Test
     void applyjob() {
@@ -61,6 +71,7 @@ class ApplicationServiceTest {
         ApplicationService Spy=spy(applicationService);
         doNothing().when(Spy).sendNotice("You have successfully applied for job id:1",1);
         doNothing().when(Spy).sendNotice("You have received an application for job id:1",1);
+
         doReturn(false).when(Spy).TooMuchApplication(1);
 
         when(applicationRepository.save(any())).thenReturn(mockDashBroad(true));
@@ -72,6 +83,13 @@ class ApplicationServiceTest {
         Assertions.assertEquals("successfully added",res);
 
 
+    }
+    @Test
+    void AlreadyApplyJob(){
+        when(applicationRepository.findByApply_idAndOrder_id(1,1))
+                .thenReturn(mockDashBroad(false));
+        String res=applicationService.Applyjob(1,1,2);
+        Assertions.assertEquals("you have already applied the job",res);
     }
     @Test
     void NottoomuchJobs(){
@@ -97,14 +115,8 @@ class ApplicationServiceTest {
         Assertions.assertEquals(true,res);
     }
 
-    private User mockUser(String Username){
-       return User.builder().username(Username).build();
-    }
-    private Application mockDashBroad(Boolean isaccepted){
-        if (isaccepted){
-        return Application.builder().order_id(1).apply_id(1).isaccepted(true).build() ;}
-        return Application.builder().order_id(1).apply_id(1).isaccepted(true).build();
-    }
+
+
     @Test
     void acceptApplication() {
 
