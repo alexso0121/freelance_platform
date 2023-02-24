@@ -17,11 +17,14 @@ com\example\OrderService\dto\JobResponse$JobResponseBuilder.class
 com\example\OrderService\dto\JobRequestDto.class
 com\example\OrderService\Entity\Application.class
 com\example\OrderService\Service\LocationInitService.class
+com\example\OrderService\config\TraceConfig.class
 com\example\OrderService\Entity\User.class
+com\example\OrderService\config\TraceConfig$1.class
 com\example\OrderService\Service\JobService.class
 com\example\OrderService\dto\ChatMessage.class
 com\example\OrderService\Service\UserCoreService.class
 com\example\OrderService\config\webclientconfig.class
+com\example\OrderService\config\TraceConfig$AsyncConfig.class
 com\example\OrderService\dto\JobRequestDto$JobRequestDtoBuilder.class
 com\example\OrderService\Entity\JobOrder.class
 com\example\OrderService\dto\JobResponse.class

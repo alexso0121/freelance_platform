@@ -105,7 +105,7 @@ public class ApplicationService {
     //if yes send notice to the client
     public Boolean TooMuchApplication(int apply_id){
         List<Application> ApplicationList = applicationRepository.findByApply_id(apply_id);
-        if(ApplicationList.size()>=20){
+        if(ApplicationList.size()<=20){
                 String notification="You have already send to much of applications.Please delete some and try again";
             sendNotice(notification, apply_id);
             return false;

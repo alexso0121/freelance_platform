@@ -1,0 +1,14 @@
+short:
+-job title repeat
+-job editor must be the user
+-bug in application no.( check edit job)
+-token time
+-apply job
+-zipkin
+
+
+long:
+-set category filter base on category
+-uuid
+-show error message
+-set file handling service

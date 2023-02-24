@@ -12,7 +12,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Document
+
 public class Chatroom {
    private int order_id;
    private int host_id;
