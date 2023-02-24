@@ -2,5 +2,6 @@ application.properties
 public.pem
 private.pem
 keypair.pem
-application.yml
+
+.idea
 
