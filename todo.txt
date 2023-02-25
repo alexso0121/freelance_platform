@@ -1,14 +1,10 @@
 short:
--job title repeat
--job editor must be the user
--bug in application no.( check edit job)
--token time
--apply job
+address cannot convert from address_id when signup
 -zipkin
--chatroom service
 
 long:
 -set category filter base on category
 -uuid
 -show error message
 -set file handling service
+-set one-to-many joborder<->application

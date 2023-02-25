@@ -21,5 +21,5 @@ public class SignupDto {
     private String cv;
     private int Address_id;
 
-    private String address;
+
 }
