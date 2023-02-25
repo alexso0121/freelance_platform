@@ -1,13 +1,16 @@
 com\springboot\sohinalex\java\config\SecurityConfig.class
+com\springboot\sohinalex\java\dto\JobResponse$JobResponseBuilder.class
 com\springboot\sohinalex\java\config\AuthFilter$Config.class
 com\springboot\sohinalex\java\service\TokenService.class
 com\springboot\sohinalex\java\config\AuthFilter.class
 com\springboot\sohinalex\java\dto\SignupDto.class
+com\springboot\sohinalex\java\dto\JobResponse.class
 com\springboot\sohinalex\java\config\webclientconfig.class
 com\springboot\sohinalex\java\Model\SecurityUser.class
 com\springboot\sohinalex\java\config\ReactiveAuthManger.class
 com\springboot\sohinalex\java\Model\user_info.class
 com\springboot\sohinalex\java\Controller\apigatewayController.class
+com\springboot\sohinalex\java\dto\SignupDto$SignupDtoBuilder.class
 com\springboot\sohinalex\java\Model\user_info$user_infoBuilder.class
 com\springboot\sohinalex\java\service\SecurityUserService.class
 com\springboot\sohinalex\java\ApiGatewayApplication.class

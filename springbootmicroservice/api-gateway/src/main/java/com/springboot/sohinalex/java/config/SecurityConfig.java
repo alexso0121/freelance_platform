@@ -91,7 +91,8 @@ public class SecurityConfig  {
                 .csrf(csrf -> csrf.disable())
 
                 .authorizeExchange(auth->
-                        auth.pathMatchers("/signup","/signin").permitAll()
+                        auth.pathMatchers("/signup","/signin"
+                                        ,"/actuator/prometheus","/","/test").permitAll()
 
                                 .anyExchange().authenticated()
                        )

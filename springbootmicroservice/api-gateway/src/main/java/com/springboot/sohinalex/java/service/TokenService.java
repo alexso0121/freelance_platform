@@ -2,6 +2,7 @@ package com.springboot.sohinalex.java.service;
 
 import com.springboot.sohinalex.java.Model.user_info;
 import com.springboot.sohinalex.java.dto.AuthResponse;
+import com.springboot.sohinalex.java.dto.JobResponse;
 import com.springboot.sohinalex.java.dto.NoticeRespond;
 import com.springboot.sohinalex.java.dto.SignupDto;
 import lombok.extern.slf4j.Slf4j;
@@ -15,9 +16,11 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.oauth2.jwt.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.Instant;
@@ -237,4 +240,17 @@ public class TokenService {
 
 
     }
+
+    public Flux<JobResponse> getAllJobs() {
+       return webClientBuilder.baseUrl("http://UserJob").build().get()
+                .uri("/jobs/all")
+                .retrieve()
+                .bodyToFlux(JobResponse.class);
+    }
+
+  /*  public Mono<AuthResponse> googleSignin(OAuth2User principal){
+        user_info user= user_info.builder()
+                .username(principal.getName())
+                .build()
+    }*/
 }

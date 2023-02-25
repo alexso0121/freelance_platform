@@ -145,23 +145,35 @@
     <orderEntry type="library" scope="RUNTIME" name="Maven: com.github.luben:zstd-jni:1.5.2-1" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.lz4:lz4-java:1.8.0" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.xerial.snappy:snappy-java:1.1.8.4" level="project" />
-    <orderEntry type="library" name="Maven: io.micrometer:micrometer-observation:1.10.2" level="project" />
-    <orderEntry type="library" name="Maven: io.micrometer:micrometer-commons:1.10.2" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: com.google.code.findbugs:jsr305:3.0.2" level="project" />
     <orderEntry type="library" name="Maven: io.micrometer:micrometer-tracing-bridge-brave:1.0.0" level="project" />
+    <orderEntry type="library" name="Maven: io.micrometer:micrometer-tracing:1.0.0" level="project" />
+    <orderEntry type="library" name="Maven: io.micrometer:context-propagation:1.0.0" level="project" />
+    <orderEntry type="library" name="Maven: aopalliance:aopalliance:1.0" level="project" />
     <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:2.0.6" level="project" />
     <orderEntry type="library" name="Maven: io.zipkin.brave:brave:5.14.1" level="project" />
     <orderEntry type="library" name="Maven: io.zipkin.brave:brave-context-slf4j:5.14.1" level="project" />
     <orderEntry type="library" name="Maven: io.zipkin.brave:brave-instrumentation-http:5.14.1" level="project" />
     <orderEntry type="library" name="Maven: io.zipkin.aws:brave-propagation-aws:0.23.4" level="project" />
-    <orderEntry type="library" name="Maven: io.micrometer:micrometer-tracing:1.0.0" level="project" />
-    <orderEntry type="library" name="Maven: io.micrometer:context-propagation:1.0.0" level="project" />
-    <orderEntry type="library" name="Maven: aopalliance:aopalliance:1.0" level="project" />
+    <orderEntry type="library" name="Maven: io.micrometer:micrometer-observation:1.10.2" level="project" />
+    <orderEntry type="library" name="Maven: io.micrometer:micrometer-commons:1.10.2" level="project" />
     <orderEntry type="library" name="Maven: io.zipkin.reporter2:zipkin-reporter-brave:2.16.3" level="project" />
     <orderEntry type="library" name="Maven: io.zipkin.reporter2:zipkin-reporter:2.16.3" level="project" />
     <orderEntry type="library" name="Maven: io.zipkin.zipkin2:zipkin:2.23.2" level="project" />
     <orderEntry type="library" name="Maven: org.projectlombok:lombok:1.18.24" level="project" />
     <orderEntry type="library" name="Maven: jakarta.persistence:jakarta.persistence-api:3.1.0" level="project" />
+    <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot-starter-actuator:3.0.1" level="project" />
+    <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot-actuator-autoconfigure:3.0.1" level="project" />
+    <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot-actuator:3.0.1" level="project" />
+    <orderEntry type="library" name="Maven: io.micrometer:micrometer-core:1.10.2" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: org.hdrhistogram:HdrHistogram:2.1.12" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: org.latencyutils:LatencyUtils:2.0.3" level="project" />
+    <orderEntry type="library" name="Maven: io.micrometer:micrometer-registry-prometheus:1.10.2" level="project" />
+    <orderEntry type="library" name="Maven: io.prometheus:simpleclient_common:0.16.0" level="project" />
+    <orderEntry type="library" name="Maven: io.prometheus:simpleclient:0.16.0" level="project" />
+    <orderEntry type="library" name="Maven: io.prometheus:simpleclient_tracer_otel:0.16.0" level="project" />
+    <orderEntry type="library" name="Maven: io.prometheus:simpleclient_tracer_common:0.16.0" level="project" />
+    <orderEntry type="library" name="Maven: io.prometheus:simpleclient_tracer_otel_agent:0.16.0" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: junit:junit:4.11" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.hamcrest:hamcrest-core:2.2" level="project" />
   </component>

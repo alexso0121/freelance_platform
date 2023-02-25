@@ -223,7 +223,7 @@ class JobControllerTest   {
                         .accept(MediaType.APPLICATION_JSON_VALUE)
                 )
                 .andExpect(status().isOk())
-                .andExpect(content().string("you have successfully removed"))
+                .andExpect(content().string("you have successfully removed the application"))
                 .andDo(print())
                 .andReturn();
 

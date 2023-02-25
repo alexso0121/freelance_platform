@@ -4,6 +4,7 @@ package com.springboot.sohinalex.java.Controller;
 import com.springboot.sohinalex.java.Model.user_info;
 import com.springboot.sohinalex.java.dto.AuthResponse;
 
+import com.springboot.sohinalex.java.dto.JobResponse;
 import com.springboot.sohinalex.java.dto.SignupDto;
 import com.springboot.sohinalex.java.service.TokenService;
 import lombok.extern.slf4j.Slf4j;
@@ -12,6 +13,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.Collections;
@@ -29,6 +31,16 @@ public class apigatewayController  {
 
     }
 
+    @GetMapping("/test")
+    public String Test(){
+        log.info("test");
+        return "test success";
+    }
+    @GetMapping("/")
+    public Flux<JobResponse> homePage(){
+        return tokenService.getAllJobs();
+    }
+
     @GetMapping("/decode/{token}")
     public Jwt decode(@PathVariable String token) throws Exception {
         return tokenService.getName(token);
@@ -43,13 +55,18 @@ public class apigatewayController  {
 
 
 
-@PostMapping("/signup")
-public Mono<AuthResponse> signup(@RequestBody SignupDto user) {
+    @PostMapping("/signup")
+    public Mono<AuthResponse> signup(@RequestBody SignupDto user) {
     return tokenService.signup(user);
 
 
-
 }
+    //google login
+    @GetMapping("/google/login")
+    public OAuth2User getall(@AuthenticationPrincipal OAuth2User principal){
+        return principal;
+    }
+
 
 
   /*  @GetMapping("/login/oauth2/code/google")
@@ -62,10 +79,8 @@ public Mono<AuthResponse> signup(@RequestBody SignupDto user) {
 
         return Collections.singletonMap("name", principal.getAttribute("email"));
     }
-    @GetMapping("/showall")
-    public OAuth2User getall(@AuthenticationPrincipal OAuth2User principal){
-    return principal;
-    }
-*/
+
+   */
+
 
 }

@@ -74,6 +74,7 @@ public class ApplicationService {
             return "you have already applied the job";
         }
 
+
         log.info("verify success");
 
         //save the application

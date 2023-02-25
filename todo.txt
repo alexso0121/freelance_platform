@@ -1,6 +1,6 @@
 short:
 address cannot convert from address_id when signup
--zipkin
+-application is accepted can still be apply
 
 long:
 -set category filter base on category

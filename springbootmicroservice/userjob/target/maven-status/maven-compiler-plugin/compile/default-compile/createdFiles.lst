@@ -7,6 +7,7 @@ com\example\OrderService\Controller\JobController.class
 com\example\OrderService\Entity\Application$ApplicationBuilder.class
 com\example\OrderService\config\LocationInitService.class
 com\example\OrderService\Controller\UserCoreController.class
+com\example\OrderService\Controller\ApplicationController.class
 com\example\OrderService\Repository\ApplicationRepository.class
 com\example\OrderService\Entity\User$UserBuilder.class
 com\example\OrderService\Entity\JobOrder$JobOrderBuilder.class

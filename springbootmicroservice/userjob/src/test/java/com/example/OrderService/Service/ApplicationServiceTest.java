@@ -133,7 +133,7 @@ class ApplicationServiceTest {
 
         doNothing().when(Spy).sendNotice("Your application for Job with title 'job1' has been accepted",3) ;
 
-        when(userCoreService.findById(1)).thenReturn(mockUser("admin"));
+        when(userCoreService.findById(3)).thenReturn(mockUser("admin"));
 
         doNothing().when(Spy).generateChat(any());
 
