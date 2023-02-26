@@ -8,13 +8,11 @@ import lombok.NoArgsConstructor;
 //class for storing data in 18 dist in hk
 @Entity
 @NoArgsConstructor
-@AllArgsConstructor
 @Data
 @Table(name = "location")
 public class Location {
     @Id
     @GeneratedValue
-    private int addr_id;
     private int address_id;
     private String region;
 
