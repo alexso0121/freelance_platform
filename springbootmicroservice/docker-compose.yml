@@ -25,29 +25,29 @@ services:
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
 
-  dbmysql:
-    container_name: dbmysql
-    image: mysql:latest
-    restart: unless-stopped
-    environment:
-      MYSQL_ROOT_PASSWORD: "password"
-      MYSQL_USER: "admin"
-      MYSQL_DATABASE: freelance
-      MYSQL_PASSWORD: "password"
-
-    ports:
-      - "3307:3307"
-    volumes:
-      - /var/lib/docker/volumes/freelance_volume/_data
-
-  mongodb:
-    container_name: mongodb
-    image: mongo:latest
-    restart: unless-stopped
-    ports:
-      - "27017:27017"
-    volumes:
-      - /data/db
+#  dbmysql:
+#    container_name: dbmysql
+#    image: mysql:latest
+#    restart: unless-stopped
+#    environment:
+#      MYSQL_ROOT_PASSWORD: "password"
+#      MYSQL_USER: "admin"
+#      MYSQL_DATABASE: freelance
+#      MYSQL_PASSWORD: "password"
+#
+#    ports:
+#      - "3307:3307"
+#    volumes:
+#      - /var/lib/docker/volumes/freelance_volume/_data
+#
+#  mongodb:
+#    container_name: mongodb
+#    image: mongo:latest
+#    restart: unless-stopped
+#    ports:
+#      - "27017:27017"
+#    volumes:
+#      - /data/db
 
   zipkin:
     image: openzipkin/zipkin
@@ -58,7 +58,7 @@ services:
 
 
   eureka-server:
-    image: eureka:latest
+    image: alex0121/eureka-server
     container_name: eureka-server
     depends_on:
       - zipkin
@@ -72,7 +72,7 @@ services:
 
 
   api-gateway:
-    image: api-gateway:latest
+    image: alex0121/api-gateway:latest
     build:
       context: api-gateway/.
       dockerfile: Dockerfile.layered
@@ -86,14 +86,13 @@ services:
 
 
   notification:
-    image: notification:latest
+    image: alex0121/notification
     build:
       context: notification/.
       dockerfile: Dockerfile.layered
     ports:
       - "8081:8081"
     depends_on:
-      - mongodb
       - eureka-server
       - broker
       - zipkin
@@ -102,14 +101,13 @@ services:
 
 
   chatroom:
-    image: chatroom:latest
+    image: alex0121/chatroom
     build:
       context: chatroom/.
       dockerfile: Dockerfile.layered
     ports:
       - "8084:8084"
     depends_on:
-      - mongodb
       - eureka-server
       - zipkin
 
@@ -120,10 +118,9 @@ services:
 
   userjob:
     depends_on:
-      - dbmysql
       - eureka-server
       - zipkin
-    image: userjob:latest
+    image: alex0121/userjob
     container_name: userjob
     build:
       context: userjob/.
@@ -133,39 +130,39 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=docker
 
-  prometheus:
-    image: prom/prometheus:v2.37.6
-    container_name: prometheus
-    restart: unless-stopped
-    ports:
-      - "9090:9090"
-    volumes:
-      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
-    depends_on:
-      - userjob
-      - notification
-      - chatroom
-      - api-gateway
-
-  grafana:
-    image: grafana/grafana-oss:8.5.2
-    container_name: grafana
-    restart: unless-stopped
-    ports:
-      - "3000:3000"
-    links:
-      - prometheus:prometheus
-    volumes:
-      - /var/lib/grafana
-    environment:
-      - GF_SECURITY_ADMIN_USER=admin
-      - GF_SECURITY_ADMIN_PASSWORD=password
-    depends_on:
-      - userjob
-      - notification
-      - chatroom
-      - api-gateway
-      - prometheus
+#  prometheus:
+#    image: prom/prometheus:v2.37.6
+#    container_name: prometheus
+#    restart: unless-stopped
+#    ports:
+#      - "9090:9090"
+##    volumes:
+##      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+#    depends_on:
+#      - userjob
+#      - notification
+#      - chatroom
+#      - api-gateway
+#
+#  grafana:
+#    image: grafana/grafana-oss:8.5.2
+#    container_name: grafana
+#    restart: unless-stopped
+#    ports:
+#      - "3000:3000"
+#    links:
+#      - prometheus:prometheus
+##    volumes:
+##      - /var/lib/grafana
+#    environment:
+#      - GF_SECURITY_ADMIN_USER=admin
+#      - GF_SECURITY_ADMIN_PASSWORD=password
+#    depends_on:
+#      - userjob
+#      - notification
+#      - chatroom
+#      - api-gateway
+#      - prometheus
 
 
 

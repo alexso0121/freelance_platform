@@ -118,7 +118,7 @@ public class TokenService {
     }
     //find the user from the database and userjob microservice
     public Mono<user_info> finduser(String username){
-        return webClientBuilder.baseUrl("http://UserJob").build().get()
+        return webClientBuilder.baseUrl("http://userjob").build().get()
                 .uri(uriBuilder -> uriBuilder
                         .path("UserJob/get/Byusername/{username}")//"http://localhost:8082/Checkuser/{id}")
                         .build(username))

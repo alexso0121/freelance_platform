@@ -36,7 +36,7 @@ public class apigatewayController  {
         log.info("test");
         return "test success";
     }
-    @GetMapping("/")
+    @GetMapping("/home")
     public Flux<JobResponse> homePage(){
         return tokenService.getAllJobs();
     }
