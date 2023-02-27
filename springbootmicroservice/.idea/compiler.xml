@@ -27,7 +27,7 @@
       <module name="chatroom" options="-parameters" />
       <module name="eureka-server" options="-parameters" />
       <module name="notification" options="-parameters" />
-      <module name="springbootmicroservice" options="" />
+      <module name="springbootmicroservice" options="-parameters" />
       <module name="userjob" options="-parameters" />
     </option>
   </component>
