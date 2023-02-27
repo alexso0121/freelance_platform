@@ -1,3 +1,6 @@
+# freelance_platform
+a demo platform for freelancer finding jobs or finding freelancers 
+
 # Backend Server:
 
 <Br>
