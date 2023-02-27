@@ -50,7 +50,7 @@ curl http://sprin-LoadB-KBBLNWRJLMKX-110df375c0b3a71d.elb.us-west-2.amazonaws.co
 
     
 4. Other apis
-pls see the api-doc in the code file above
+pls see the apis-doc in the code file above
     
 <Br>
 
