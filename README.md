@@ -8,9 +8,11 @@ a demo platform for freelancer finding jobs or finding freelancers
 - applied the springboot microservice architecture with docker.
 - api-gateway for routing and securing the server by oauth2 resource server and json web token in spring webflux security.
 - other services : chatroom and notification
-- spring cloud service like eureka, kafka messaging queue ,zipkin ,broker, etc.All of these are shown in docker-compose.yml file.tested with integration - test with integration test and unit test in test directory in each service.
+- spring cloud service are shown in docker-compose.yml file
+- test with integration test and unit test in test directory in each service.
 - Mongodb and mysql are used for database
 - deployed to aws ecs
+- docker image: https://hub.docker.com/repositories/alex0121
 
 <Br>
     
