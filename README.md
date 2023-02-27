@@ -68,6 +68,7 @@ pls see the apis-doc in the code file above
 
 3. userjob:
 - main service for handling jobs,users,applications
+- sample crud
 - mysql
 
 4. chatroom
