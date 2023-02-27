@@ -8,36 +8,32 @@ The apis are tested with integration test and unit test
 # Get start with the api
 Since the server is secured by jwt, apis other than sign in and sign out involve jwt to authorize the server
 
-sign up:
-browsing "/signup " with signUpDto.class:
-
+- Quick sign in   :
 ```
-{
-   "username": "$USERNAME",
-   "password": "$PASSWORD",
-   "fullname": "$FULLNAME",
-   "email","$EMAIL",
-   "skill_set": "$SKILL_SET",
-   "contact": "$CONTACT",
-   "cv": "$CV",
-   "address_id": $ADDRESS_ID(INT)
-}
+curl -X POST http://sprin-LoadB-KBBLNWRJLMKX-110df375c0b3a71d.elb.us-west-2.amazonaws.com:8080/signin -u admin:password
 ```
+Above sign in with username:admin , password:password
 
-signin:
-browsing "/signin" with basic auth
-
+AuthResponse (expected response):
 ```
-Response:
 {
     "user_id": $USER_ID(INT)
     "token": "$TOKEN"
 }
 ```
+token contain user's credentials , generated time ,expired time , and some secret
 
 
+- Using token to access apis:
 
-the token can last for 3 hours and each can only access with jwt by adding bearer token with authorization at the header
+the below api responsible for showing all available jobs can be applied for freelancer and the token form .
+Using the token generated from the authresponse and replace it with the $TOKEN below .
+```
+curl http://sprin-LoadB-KBBLNWRJLMKX-110df375c0b3a71d.elb.us-west-2.amazonaws.com:8080/UserJob/jobs/all -H "Authorization: Bearer $TOKEN"
+
+``` 
+
+
 
 # Microservice architectire:
 1.api-gateway:
