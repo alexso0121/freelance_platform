@@ -1,7 +1,4 @@
-com\example\notification\TraceConfig.class
-com\example\notification\TraceConfig$1.class
 com\example\notification\dto\NoticeRespond.class
-com\example\notification\Controller\NotificationController.class
-com\example\notification\TraceConfig$AsyncConfig.class
 com\example\notification\NotificationApplication.class
+com\example\notification\Controller\NotificationController.class
 com\example\notification\Respository\NotificationRepository.class

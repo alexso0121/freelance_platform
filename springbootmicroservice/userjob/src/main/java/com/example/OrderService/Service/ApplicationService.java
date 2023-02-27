@@ -198,7 +198,7 @@ public class ApplicationService {
 
     //sending post chat request to the chatroom microservice
     public void generateChat(ChatMessage buildmessage) {
-        webclient.baseUrl("/localhost:8084").build()
+        webclient.baseUrl("/chatroom:8084").build()
                 .post().uri("/Chat/chat/post")
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .body(Mono.just(buildmessage), ChatMessage.class)

@@ -98,6 +98,7 @@ public class UserCoreService {
         return userRespository.save(user);
     }
     public User sigup(User user){
+        user.setScore(3.0);
         user.setAddress(locationService.getLocation(user.getAddress_id()));
         log.info(user.getAddress());
         return saveAndReturn(user);

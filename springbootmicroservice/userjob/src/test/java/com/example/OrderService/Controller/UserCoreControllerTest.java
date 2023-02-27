@@ -173,6 +173,7 @@ class UserCoreControllerTest  {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.username").value("tom"))
                 .andExpect(jsonPath("$.address").value("Island"))
+                .andExpect(jsonPath("$.score").value(3.0))
                 .andDo(print());
         userRepository.deleteById(1);
     }

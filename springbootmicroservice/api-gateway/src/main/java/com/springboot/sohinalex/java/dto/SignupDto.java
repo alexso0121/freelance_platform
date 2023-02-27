@@ -1,5 +1,7 @@
 package com.springboot.sohinalex.java.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,7 +21,7 @@ public class SignupDto {
 
     private String contact;
     private String cv;
-    private int Address_id;
+    private int Address_id;  //Jsonvalue ==address_id
 
 
 }

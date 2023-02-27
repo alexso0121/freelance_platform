@@ -30,7 +30,7 @@ public class SecurityUserService implements ReactiveUserDetailsService {
             log.info("get user");
 
 
-        return  webClientBuilder.baseUrl("UserJob").build().get()
+        return  webClientBuilder.baseUrl("userjob:8000").build().get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/UserJob/get/Byusername/{username}")//"http://localhost:8082/Checkuser/{id}")
                         .build(username))

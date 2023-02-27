@@ -51,7 +51,7 @@ public class TokenService {
 
     //can be updated base on the dns or local machine (localhost)
 //    private final String dns="UserJob";
-    private final String dns="localhost:8000";
+    private final String dns="userjob:8000";
 
     public TokenService(JwtEncoder jwtEncoder, JwtDecoder jwtDecoder, WebClient.Builder webclient, PasswordEncoder passwordEncoder, ReactiveAuthenticationManager reactiveAuthenticationManager, WebClient.Builder webClientBuilder) {
         this.jwtEncoder = jwtEncoder;
@@ -65,6 +65,7 @@ public class TokenService {
 
     //convert signupDto to user_info class
     public user_info SignupDtoTouserInfo(SignupDto signupDto){
+
         return user_info.builder()
                 .username(signupDto.getUsername())
                 .password(signupDto.getPassword())
@@ -166,7 +167,7 @@ public class TokenService {
     public Mono<AuthResponse> signup(SignupDto user) {
 
             log.info("signup start");
-
+        System.out.println(user);
             //convert Isusernameexist method to return either true or false
             Mono<Boolean> isuserexist=IsUsernameExist(user.getUsername())
                     .doOnNext(System.out::println)
