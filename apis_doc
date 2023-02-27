@@ -1,10 +1,10 @@
 #This document is responsible for the documentation of each apis
 #controller can found in springbootmicroservice->
 (service)->src->main->java->com/springboot/sohinalex/java->Controller
-endpoint:
+#endpoint:
 http://sprin-LoadB-KBBLNWRJLMKX-110df375c0b3a71d.elb.us-west-2.amazonaws.com:8080
-abbreviation: STR=String,INT =integer
-if with (must) other can be null
+#abbreviation: STR=String,INT =integer
+#if with (must) other can be null
 
 
 
@@ -47,6 +47,7 @@ ChatMessage:
   sender: STR
   dateTime: Instant
   }
+
 Notification:
 noticeResponse:
   {
