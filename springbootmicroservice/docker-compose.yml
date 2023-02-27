@@ -58,7 +58,7 @@ services:
 
 
   eureka-server:
-    image: alex0121/eureka-server
+    image: alex0121/eureka-server:latest
     container_name: eureka-server
     depends_on:
       - zipkin
@@ -86,7 +86,7 @@ services:
 
 
   notification:
-    image: alex0121/notification
+    image: alex0121/notification:latest
     build:
       context: notification/.
       dockerfile: Dockerfile.layered
@@ -101,7 +101,7 @@ services:
 
 
   chatroom:
-    image: alex0121/chatroom
+    image: alex0121/chatroom:latest
     build:
       context: chatroom/.
       dockerfile: Dockerfile.layered
@@ -120,7 +120,7 @@ services:
     depends_on:
       - eureka-server
       - zipkin
-    image: alex0121/userjob
+    image: alex0121/userjob:latest
     container_name: userjob
     build:
       context: userjob/.

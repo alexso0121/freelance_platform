@@ -49,7 +49,9 @@ public class TokenService {
 
     private final WebClient.Builder webClientBuilder;
 
-
+    //can be updated base on the dns or local machine (localhost)
+//    private final String dns="UserJob";
+    private final String dns="localhost:8000";
 
     public TokenService(JwtEncoder jwtEncoder, JwtDecoder jwtDecoder, WebClient.Builder webclient, PasswordEncoder passwordEncoder, ReactiveAuthenticationManager reactiveAuthenticationManager, WebClient.Builder webClientBuilder) {
         this.jwtEncoder = jwtEncoder;
@@ -118,18 +120,18 @@ public class TokenService {
     }
     //find the user from the database and userjob microservice
     public Mono<user_info> finduser(String username){
-        return webClientBuilder.baseUrl("http://userjob").build().get()
-                .uri(uriBuilder -> uriBuilder
-                        .path("UserJob/get/Byusername/{username}")//"http://localhost:8082/Checkuser/{id}")
-                        .build(username))
-                .retrieve()
+            return webClientBuilder.baseUrl("http://"+dns).build().get()
+                    .uri(uriBuilder -> uriBuilder
+                            .path("UserJob/get/Byusername/{username}")//"http://localhost:8082/Checkuser/{id}")
+                            .build(username))
+                    .retrieve()
                 .bodyToMono(user_info.class);
     }
 
     //save the user_info to the database and userjob microservice
     public Mono<user_info> saveUser(user_info user){
 
-        return webClientBuilder.baseUrl("http://UserJob").build().post()
+        return webClientBuilder.baseUrl("http://"+dns).build().post()
                 .uri("UserJob/add/user")
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .body(Mono.just(user), user_info.class)
