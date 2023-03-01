@@ -1,0 +1,201 @@
+#This document is responsible for the documentation of each apis
+#controller can found in springbootmicroservice->
+(service)->src->main->java->com/springboot/sohinalex/java->Controller
+#endpoint:
+http://sprin-LoadB-KBBLNWRJLMKX-110df375c0b3a71d.elb.us-west-2.amazonaws.com:8080
+#abbreviation: STR=String,INT =integer
+#if with (must) other can be null
+
+
+
+api-gateway (no need for token)
+
+1. "/signup", post , Body (user_info)
+- sign up
+SignupDto:
+  {
+      username: STR (must)
+      password: STR (must)
+      fullName: STR
+      email: STR
+      skill_set: STR
+      contact: STR
+      cv: STR
+      address_id: INT
+  }
+- return token (String) id(int)
+
+2. "/decode/{token}" ,get , token=token
+-showing the details of token
+-require token
+
+
+Chatroom (token ->bearer token)
+
+1. "/Chat/chat/post", post, Body (chatMessage)
+- save new chat message
+- return chatmessage
+
+2. "/Chat/chat/show",get, RequestParam (order_id)
+- show new chats base on the order_id display the new room
+- return list<chatmessage>
+ChatMessage:
+  {
+  order_id: INT
+  type: ENUM{CHAT/JOIN/LEAVE/BUILD}
+  content: STR
+  sender: STR
+  dateTime: Instant
+  }
+
+Notification:
+noticeResponse:
+  {
+  user_id: INT
+  dateTime: String
+  notification:String
+  }
+  
+the user will get the notice once they sign in, signup, apply job, accept join
+1."/notice/getNotice/{user_id}",get
+-display the all the notice received
+-return List<noticeRespond>
+
+
+Userjob (token -> bearer token)
+SignupDto:
+  {
+      username: STR (must)
+      password: STR (must)
+      fullName: STR
+      email: STR
+      skill_set: STR
+      contact: STR
+      cv: STR
+      address_id: INT
+  }
+InfoResponse:
+  {
+    username: STR 
+    password: STR 
+    fullName: STR
+    email: STR
+    skill_set: STR
+    contact: STR
+    cv: STR
+    address: STR
+  }
+
+usercorecontroller:
+1."Userjob/CheckUser/{id}" ,get, pathvariable(id)
+-verify whether the user can post or apply a job
+-boolean
+
+2."Userjob/getProfile/{id}",get pathvariable(id)
+-get the profile of the user
+-return InfoResponse
+
+
+3."Userjob/updateuser", put , body(user)
+-update the user detail
+-return String
+
+4."Userjob/add/user",post, body (signupdto)
+-add the user to the db
+-return user
+
+5."Userjob/deleteuser/{id}",delete, pathvariable id
+-delete a user
+-return a string
+
+jobcontroller
+
+jobOrder~JobResponse:
+  {
+    user_id: INT
+    title: STR (must)
+    description: STR
+    requirement: STR
+    contact: STR
+    salary: DOUBLE
+    organization: STR
+    address_id: INT
+    application_number: INT
+    date: STR
+    
+  }
+
+ 
+1."UserJob/Job/Post",post,body(joborder)
+-post a new job
+-return job
+
+2."UserJob/job/get/{order_id}",get,pathvariable(order_id)
+-get the info of the job
+-return the job
+
+3."UserJob/Jobs/User/{user_id}",get ,pathvariable(user_id)
+-get the jobs that are posted by the user
+-return  List<JobResponse>
+
+4."UserJob/job/edit",put,body (JobRequestDto)
+-edit the job info
+-return the edited job
+
+5."UserJob/delete/{order_ID}",delete, pathvariable (order_id)
+-remove the job
+-return String
+
+6."UserJob/jobs/all",get
+-display all the available jobs
+-return List<jobResponse>
+
+7."UserJob/jobs/region/{address_id},get, pathvariable (address_id)
+-filter the available jobs by address_id
+-return JobResponse
+
+8."UserJob/admin/jobs/all",get
+-show all jobs including the closed jobs
+
+Application Controller
+ApplicationRequest:
+  {
+    order_id: INT   //responsible to the order_id of the job
+    poster_id: INT  //responsible to the user_id for the user who apply the job
+    apply_id: INT   //responsible to the user_id for the user who post the job
+  }
+Application:
+  {
+  application_id: INT
+  order_id: INT
+  is_accepted: BOOLEAN
+  apply_id: INT
+  }
+
+1./UserJob/job/apply,post,ApplicationRequest
+-applying for job
+-return response with String
+
+2./UserJob/Applications/show,get,applicationRequest
+-show the information of the users who have apply the jobs
+-return List<InfoResponse>
+
+3./UserJob/Applications/accept,put,applicationRequest
+-poster choose and accept the application
+-return InfoResponse
+
+4./UserJob/Applications/delete,delete,applicationRequest
+-applicant remove the application
+-return response as String
+
+5./UserJob/Accept/show,post,applicationRequest
+-show the applications who are accepted base on the order_id
+-return List<InfoResponse>
+
+6./UserJob/application/history/{id},get,Pathvariable{id}
+-show the jobs that the user have applied
+-return List<JobResponse>
+
+7./UserJob/admin/application/all,get
+-show all data in application table
+-return List<Application>
