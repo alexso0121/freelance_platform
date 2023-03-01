@@ -65,7 +65,7 @@ public class UserCoreController {
     }
 
     //delete the user
-    @DeleteMapping("/deleteuser/{id}")
+    //@DeleteMapping("/deleteuser/{id}") => prevention of being delete the admin
     public String deleteUser(@PathVariable int id){
         log.info("Deleted user id: '{}",id);
         return userCoreservice.Delete(id);

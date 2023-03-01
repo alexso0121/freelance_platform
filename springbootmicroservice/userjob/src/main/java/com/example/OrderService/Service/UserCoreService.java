@@ -100,7 +100,7 @@ public class UserCoreService {
     public User sigup(User user){
         user.setScore(3.0);
         user.setAddress(locationService.getLocation(user.getAddress_id()));
-        log.info(user.getAddress());
+        log.info(String.valueOf(user));
         return saveAndReturn(user);
     }
     //update application list in user
