@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 //main class for storing data in application
 @Entity
@@ -22,7 +23,7 @@ public class Application {
     private int application_id;
     private int order_id;
     private boolean isaccepted=false;
-    private int apply_id;
+    private UUID apply_id;
 
     /*private int poster_id;  //user_id who post the job
 

@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 //main class for storing data in job
 @Entity
@@ -20,7 +21,7 @@ public class JobOrder {
     @Id
     @GeneratedValue/*(strategy = GenerationType.IDENTITY)*/
     private int order_id;
-    private int user_id;
+    private UUID user_id;
     private String Title;
     private String Description;
     private String Requirement;

@@ -16,6 +16,7 @@ import static org.mockito.Mockito.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @ExtendWith(MockitoExtension.class)
 class JobServiceTest {
@@ -37,44 +38,46 @@ class JobServiceTest {
     @Mock
     private LocationService locationService;
 
+    private final UUID uuid1=UUID.randomUUID();
+
 
     @Test
     void postValidJob() throws IllegalAccessException {
-        JobOrder jobOrder=JobOrder.builder().order_id(1).user_id(1).Title("demo").address_id(1).build();
+        JobOrder jobOrder=JobOrder.builder().order_id(1).user_id(uuid1).Title("demo").address_id(1).build();
         JobResponse ans= JobResponse.builder().order_id(1)
                 .title("demo").region("Yuen Long").build();
         JobService Spy=spy(jobService);
 
-        when(jobRepository.findByTitleAnduser(any(),eq(1))).thenReturn(null);
-        when(userCoreService.VerifyCanOrder(1)).thenReturn(true);
+        when(jobRepository.findByTitleAnduser(any(),eq(uuid1))).thenReturn(null);
+        when(userCoreService.VerifyCanOrder(uuid1)).thenReturn(true);
         when(locationService.getLocation(1)).thenReturn("Yuen Long");
         when(jobRepository.save(any())).thenReturn(jobOrder);
-        doNothing().when(Spy).sendNotice("The Job with order id (1) has successfully posted !",1);
+        doNothing().when(Spy).sendNotice("The Job with order id (1) has successfully posted !",uuid1);
 
-        Assertions.assertEquals(ans,Spy.postJob(jobOrder));
+        Assertions.assertEquals(ans,Spy.postJob(jobOrder).getBody());
     }
     @Test
     void postRepeatTitleJob() throws IllegalAccessException {
-        JobOrder jobOrder=JobOrder.builder().order_id(1).user_id(1).Title("demo").address_id(1).build();
+        JobOrder jobOrder=JobOrder.builder().order_id(1).user_id(uuid1).Title("demo").address_id(1).build();
 
         JobService Spy=spy(jobService);
 
-        when(jobRepository.findByTitleAnduser(any(),eq(1))).thenReturn(jobOrder);
+        when(jobRepository.findByTitleAnduser(any(),eq(uuid1))).thenReturn(jobOrder);
 
 
-        Assertions.assertEquals(null,Spy.postJob(jobOrder));
+        Assertions.assertEquals(null,Spy.postJob(jobOrder).getBody());
     }
     @Test
     void postIfUserScoreTooLow() throws IllegalAccessException {
-        JobOrder jobOrder=JobOrder.builder().order_id(1).user_id(1).Title("demo").address_id(1).build();
+        JobOrder jobOrder=JobOrder.builder().order_id(1).user_id(uuid1).Title("demo").address_id(1).build();
 
         JobService Spy=spy(jobService);
 
-        when(userCoreService.VerifyCanOrder(1)).thenReturn(false);
-        doNothing().when(Spy).sendNotice("You cannot post job since your credit is too low",1);
+        when(userCoreService.VerifyCanOrder(uuid1)).thenReturn(false);
+        doNothing().when(Spy).sendNotice("You cannot post job since your credit is too low",uuid1);
 
 
-        Assertions.assertEquals(null,Spy.postJob(jobOrder));
+        Assertions.assertEquals(null,Spy.postJob(jobOrder).getBody());
     }
 
     @Test
@@ -98,7 +101,7 @@ class JobServiceTest {
                 .organization("org")
                 .order_id(1).build();
         JobRequestDto requestDto=JobRequestDto.builder().order_id(1)
-                .user_id(1).title("updateJob").requirement("req")
+                .user_id(uuid1).title("updateJob").requirement("req")
                 .application_number(2)
                 .contact("1").salary(123).address_id(2)
                 .description("des").build();

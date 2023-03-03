@@ -5,6 +5,7 @@ import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 //main class for data in user
 @Data
@@ -17,7 +18,7 @@ public class User {
 
     @Id
     @GeneratedValue
-    private int id;
+    private UUID id;
     private String username;
     private String password;
     private String fullName;

@@ -23,6 +23,7 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.util.ArrayList;
+import java.util.UUID;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -49,6 +50,7 @@ class UserCoreControllerTest  {
     @Container
     private static MySQLContainer container=new MySQLContainer("mysql:8.0.26")
             ;
+    private final UUID uuid1=UUID.randomUUID();
 
     @DynamicPropertySource
     public static void setProperties(DynamicPropertyRegistry dynamicPropertyRegistry){
@@ -71,7 +73,7 @@ class UserCoreControllerTest  {
 */
     private User mockUser(){
 
-      User user=User.builder().id(1).username("admin")
+      User user=User.builder().id(uuid1).username("admin")
               .password("admin").Address_id(1).build();
         return user;
     }
@@ -175,7 +177,7 @@ class UserCoreControllerTest  {
                 .andExpect(jsonPath("$.address").value("Island"))
                 .andExpect(jsonPath("$.score").value(3.0))
                 .andDo(print());
-        userRepository.deleteById(1);
+       // userRepository.deleteById(1);
     }
 
 

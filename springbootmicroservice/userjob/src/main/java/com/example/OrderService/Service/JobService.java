@@ -12,12 +12,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 //business logic for handling Jobs
@@ -54,13 +57,15 @@ public class JobService {
 
 
     //post a job
-    public JobResponse postJob(JobOrder jobOrder) throws IllegalAccessException {
+    public ResponseEntity<JobResponse> postJob(JobOrder jobOrder) throws IllegalAccessException {
         //verify can post
         if(!VerifyCanPost(jobOrder)){
-            return null;
+            return ResponseEntity.status(
+            HttpStatus.FORBIDDEN)
+                    .body(null);
         }
         LOG.info("User can upload ");
-        int user_id=jobOrder.getUser_id();
+        UUID user_id=jobOrder.getUser_id();
 
         //convert the address_id to region base on the 18 district in hk
         jobOrder.setRegion(locationService.getLocation(jobOrder.getAddress_id()));
@@ -70,7 +75,9 @@ public class JobService {
         String notification="The Job with order id (" +job.getOrder_id()+") has successfully posted !";
         sendNotice(notification,user_id);
 
-        return GetSingleJob(job);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                        .body(
+                GetSingleJob(job));
     }
 
     //check whether the user can post a job
@@ -80,7 +87,7 @@ public class JobService {
             log.info("job already exist");
             return false;
         }
-        int user_id=jobOrder.getUser_id();
+        UUID user_id=jobOrder.getUser_id();
         //call user service check the score of user
 
         LOG.info("check the user can upload job post");
@@ -95,7 +102,7 @@ public class JobService {
     }
 
     //send notification to the notification microservice
-    public void sendNotice(String notification,int userid){
+    public void sendNotice(String notification,UUID userid){
         LocalDateTime myDateObj = LocalDateTime.now();
         DateTimeFormatter myFormatObj = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
         String formattedDate = myDateObj.format(myFormatObj);
@@ -121,7 +128,7 @@ public class JobService {
     }
 
     //check if the job's with same title and organisation already exist
-    public Boolean checkif_JobAlreadyExist(String title,int user_id){
+    public Boolean checkif_JobAlreadyExist(String title,UUID user_id){
         JobOrder jobOrder= jobRepository.findByTitleAnduser(title,user_id);
         return jobOrder != null;
     }
@@ -155,7 +162,7 @@ public class JobService {
 
 
     //get the jobs which is posted by the user
-    public List<JobResponse> getUserJobs(int userId) {
+    public List<JobResponse> getUserJobs(UUID userId) {
        return jobRepository.getUserJobs(userId).stream()
                 .map(this::GetSingleJob)    //map the joborder class to response
                 .collect(Collectors.toList());

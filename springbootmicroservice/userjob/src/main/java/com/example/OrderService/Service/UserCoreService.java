@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
+import java.util.UUID;
 
 //business logic for handling user
 @Service
@@ -26,7 +27,7 @@ public class UserCoreService {
     }
 
     //check user can post/apply base on the score
-    public Boolean VerifyCanOrder(int id){
+    public Boolean VerifyCanOrder(UUID id){
         User user=userRespository.findById(id).orElse(null);
         if(user.getScore()<2.0){
             return false;
@@ -37,7 +38,7 @@ public class UserCoreService {
 
 
     //convert a user to a user profile dto
-    public InfoResponse getProfile( int id){
+    public InfoResponse getProfile( UUID id){
         return UserToDTO(userRespository
                         .findById(id).orElse(null));
 
@@ -64,7 +65,7 @@ public class UserCoreService {
     }
 
 
-    public User getUser(int id){
+    public User getUser(UUID id){
         return userRespository.findById(id).orElse(null);
     }
 
@@ -83,7 +84,7 @@ public class UserCoreService {
         return respond;
     }
 
-    public User findById(int id) {
+    public User findById(UUID id) {
         return userRespository.findById(id).orElse(null);
     }
 
@@ -106,7 +107,7 @@ public class UserCoreService {
     //update application list in user
 
     //delete a user
-    public String Delete(int id){
+    public String Delete(UUID id){
         userRespository.deleteById(id);
         return "User with id "+id +"is removed";
     }

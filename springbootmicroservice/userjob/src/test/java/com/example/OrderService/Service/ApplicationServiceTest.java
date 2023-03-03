@@ -17,10 +17,12 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.autoconfigure.batch.BatchProperties;
+import org.springframework.http.ResponseEntity;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.mockito.Mockito.*;
 
@@ -47,6 +49,10 @@ class ApplicationServiceTest {
     @Mock
     private JobService jobService;
 
+    private final UUID id1= UUID.fromString("6b6ca058-b904-11ed-afa1-0242ac120002");
+
+    private final UUID id2=UUID.randomUUID();
+
 
     /*@Before
     public void init(){
@@ -58,8 +64,8 @@ class ApplicationServiceTest {
     }
     private Application mockDashBroad(Boolean isaccepted){
         if (isaccepted){
-            return Application.builder().order_id(1).apply_id(1).isaccepted(true).build() ;}
-        return Application.builder().order_id(1).apply_id(1).isaccepted(true).build();
+            return Application.builder().order_id(1).apply_id(id1).isaccepted(true).build() ;}
+        return Application.builder().order_id(1).apply_id(id1).isaccepted(true).build();
     }
 
 
@@ -69,34 +75,34 @@ class ApplicationServiceTest {
 
         //Assertions.assertEquals("admin",userCoreService.findById(1).getUsername());
         ApplicationService Spy=spy(applicationService);
-        doNothing().when(Spy).sendNotice("You have successfully applied for job id:1",1);
-        doNothing().when(Spy).sendNotice("You have received an application for job id:1",1);
+        doNothing().when(Spy).sendNotice("You have successfully applied for job id:1",id1);
+        doNothing().when(Spy).sendNotice("You have received an application for job id:1",id1);
 
-        doReturn(false).when(Spy).TooMuchApplication(1);
+        doReturn(false).when(Spy).TooMuchApplication(id1);
 
         when(applicationRepository.save(any())).thenReturn(mockDashBroad(true));
 
 
-        System.out.println(userRepository.findById(1));
-        String res=Spy.Applyjob(1,1,1);
+        System.out.println(userRepository.findById(id1));
+        ResponseEntity<String> res=Spy.Applyjob(1,id1,id1);
         System.out.println(res);
-        Assertions.assertEquals("successfully added",res);
+        Assertions.assertEquals("successfully added",res.getBody());
 
 
     }
     @Test
     void AlreadyApplyJob(){
-        when(applicationRepository.findByApply_idAndOrder_id(1,1))
+        when(applicationRepository.findByApply_idAndOrder_id(id1,1))
                 .thenReturn(mockDashBroad(false));
-        String res=applicationService.Applyjob(1,1,2);
-        Assertions.assertEquals("you have already applied the job",res);
+        ResponseEntity<String> res=applicationService.Applyjob(1,id1,id2);
+        Assertions.assertEquals(null,res.getBody());
     }
     @Test
     void NottoomuchJobs(){
         Application singleApplication=Application.builder().order_id(1)
-                        .apply_id(1).build();
-      when(applicationRepository.findByApply_id(1)).thenReturn(List.of( singleApplication));
-      Boolean res=applicationService.TooMuchApplication(1);
+                        .apply_id(id1).build();
+      when(applicationRepository.findByApply_id(id1)).thenReturn(List.of( singleApplication));
+      Boolean res=applicationService.TooMuchApplication(id1);
       Assertions.assertEquals(false,res);
     }
 
@@ -104,14 +110,14 @@ class ApplicationServiceTest {
     void toomuchJobs(){
         ApplicationService Spy=spy(applicationService);
         Application singleApplication=Application.builder().order_id(1)
-                .apply_id(1).build();
+                .apply_id(id1).build();
         List<Application> applicationList=new ArrayList<>();
         for(int i=0;i<=20;i++){
             applicationList.add(singleApplication);
         }
-        doNothing().when(Spy).sendNotice(any(),eq(1));
-        when(applicationRepository.findByApply_id(1)).thenReturn(applicationList);
-        Boolean res=Spy.TooMuchApplication(1);
+        doNothing().when(Spy).sendNotice(any(),eq(id1));
+        when(applicationRepository.findByApply_id(id1)).thenReturn(applicationList);
+        Boolean res=Spy.TooMuchApplication(id1);
         Assertions.assertEquals(true,res);
     }
 
@@ -122,23 +128,23 @@ class ApplicationServiceTest {
 
 
 
-        Application application =Application.builder().order_id(1).apply_id(1).isaccepted(false).build();
+        Application application =Application.builder().order_id(1).apply_id(id1).isaccepted(false).build();
 
-       when(applicationRepository.findByApply_idAndOrder_id(3,1)).thenReturn(application);
+       when(applicationRepository.findByApply_idAndOrder_id(id1,1)).thenReturn(application);
        when(jobRepository.findById(1)).thenReturn(Optional.ofNullable(JobOrder.builder().order_id(1).Title("job1").build()));
 
         ApplicationService Spy=Mockito.spy(applicationService);
-        doNothing().when(Spy).sendNotice("You have successfully accepted the application for job id:1",1);
+        doNothing().when(Spy).sendNotice("You have successfully accepted the application for job id:1",id1);
 
 
-        doNothing().when(Spy).sendNotice("Your application for Job with title 'job1' has been accepted",3) ;
+        doNothing().when(Spy).sendNotice("Your application for Job with title 'job1' has been accepted",id1) ;
 
-        when(userCoreService.findById(3)).thenReturn(mockUser("admin"));
+        when(userCoreService.findById(id1)).thenReturn(mockUser("admin"));
 
         doNothing().when(Spy).generateChat(any());
 
 
-        Assertions.assertEquals(userCoreService.getProfile(3),Spy.acceptApplication(1,1,3));
+        Assertions.assertEquals(userCoreService.getProfile(id1),Spy.acceptApplication(1,id1,id1).getBody());
     }
 
 
@@ -158,11 +164,11 @@ class ApplicationServiceTest {
     @Test
     void HandleIfNoRemainNumber(){
         ApplicationService Spy=spy(applicationService);
-        JobOrder job= JobOrder.builder().user_id(1).order_id(1).application_number(1).build();
-        User user= User.builder().id(1).username("admin").build();
+        JobOrder job= JobOrder.builder().user_id(id1).order_id(1).application_number(1).build();
+        User user= User.builder().id(id1).username("admin").build();
 
-        when(userCoreService.findById(1)).thenReturn(user);
-        doNothing().when(Spy).sendNotice("You have recruited enough amount of employee!The job will be closed",1);
+        when(userCoreService.findById(id1)).thenReturn(user);
+        doNothing().when(Spy).sendNotice("You have recruited enough amount of employee!The job will be closed",id1);
         doNothing().when(Spy).generateChat(any());
 
         JobOrder res=Spy.HandleRemain_number(job);

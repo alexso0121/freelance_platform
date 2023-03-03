@@ -8,6 +8,7 @@ import com.springboot.sohinalex.java.dto.JobResponse;
 import com.springboot.sohinalex.java.dto.SignupDto;
 import com.springboot.sohinalex.java.service.TokenService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -47,7 +48,7 @@ public class apigatewayController  {
     }
 
     @PostMapping("/signin")
-    public Mono<AuthResponse> login(Authentication auth) {
+    public Mono<ResponseEntity<AuthResponse>> login(Authentication auth) {
         log.info("start auth");
         return tokenService.signin(auth);
     }
@@ -56,7 +57,7 @@ public class apigatewayController  {
 
 
     @PostMapping("/signup")
-    public Mono<AuthResponse> signup(@RequestBody SignupDto user) {
+    public Mono<ResponseEntity<AuthResponse>> signup(@RequestBody SignupDto user) {
     return tokenService.signup(user);
 
 

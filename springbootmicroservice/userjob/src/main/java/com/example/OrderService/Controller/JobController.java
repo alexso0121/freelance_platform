@@ -10,9 +10,11 @@ import com.example.OrderService.dto.JobRequestDto;
 import com.example.OrderService.dto.JobResponse;
 import com.example.OrderService.Service.JobService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 //api for job handling
 @RestController
@@ -30,7 +32,7 @@ public class JobController {
 
     //posting jobs
     @PostMapping("/Job/post")
-    public JobResponse postJob(@RequestBody JobOrder jobOrder) throws IllegalAccessException {
+    public ResponseEntity<JobResponse> postJob(@RequestBody JobOrder jobOrder) throws IllegalAccessException {
         return jobService.postJob(jobOrder);
     }
 
@@ -44,7 +46,7 @@ public class JobController {
 
     //get the number of posted jobs of the specific user
     @GetMapping("/Jobs/User/{user_id}")
-    public List<JobResponse> getAllJobs(@PathVariable int user_id) {
+    public List<JobResponse> getAllJobs(@PathVariable UUID user_id) {
 
         return jobService.getUserJobs(user_id);
 

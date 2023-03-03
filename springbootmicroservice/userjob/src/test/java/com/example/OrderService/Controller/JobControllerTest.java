@@ -30,6 +30,7 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.util.ArrayList;
+import java.util.UUID;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -67,6 +68,7 @@ class JobControllerTest   {
         dynamicPropertyRegistry.add("spring.datasource.username",container::getUsername);
         dynamicPropertyRegistry.add("spring.datasource.password",container::getPassword);
     }
+    private final UUID uuid1=UUID.randomUUID();
 
 
     @BeforeEach
@@ -85,11 +87,11 @@ class JobControllerTest   {
         jobRepository.deleteAll();
     }
 
-    private JobOrder Mockjob(int user_id,String Title){
+    private JobOrder Mockjob(UUID user_id,String Title){
         JobOrder job=JobOrder.builder().user_id(user_id).Title(Title).build();
         return job;
     }
-    private User mockUser(int id,String username){
+    private User mockUser(UUID id,String username){
 
         User user= User.builder().id(id).username(username).build();
        /* user.getApplications().add(mockJobOrder("job1title","b"));
@@ -104,8 +106,8 @@ class JobControllerTest   {
     @Transactional
     void getsinglejob() throws Exception {
 
-        JobOrder job=jobRepository.save(Mockjob(1,"job1"));
-        User user=userRepository.save(mockUser(0,"admin"));
+        JobOrder job=jobRepository.save(Mockjob(uuid1,"job1"));
+        User user=userRepository.save(mockUser(uuid1,"admin"));
         applicationRepository.save(
                 Application.builder().apply_id(user.getId()).order_id(job.getOrder_id()).build());
 
@@ -124,13 +126,13 @@ class JobControllerTest   {
     @Test
     @Transactional
     void getAllJobs() throws Exception {
-        JobOrder job1=jobRepository.save(Mockjob(1,"job1"));
-        User user=userRepository.save(mockUser(0,"admin"));
+        JobOrder job1=jobRepository.save(Mockjob(uuid1,"job1"));
+        User user=userRepository.save(mockUser(uuid1,"admin"));
         applicationRepository.save(
                 Application.builder().apply_id(user.getId()).order_id(job1.getOrder_id()).build());
 
-        JobOrder job2=jobRepository.save(Mockjob(1,"job2"));
-        User user2=userRepository.save(mockUser(0,"admin"));
+        JobOrder job2=jobRepository.save(Mockjob(uuid1,"job2"));
+        User user2=userRepository.save(mockUser(uuid1,"admin"));
         applicationRepository.save(
                 Application.builder().apply_id(user2.getId()).order_id(job2.getOrder_id()).build());
         /*jobRepository.save(Mockjob(1,"job2"));
@@ -151,8 +153,8 @@ class JobControllerTest   {
     @Test
     @Transactional
     void editJobCheckisedit() throws Exception {
-        JobOrder job=jobRepository.save(Mockjob(1,"job1"));
-        User user=userRepository.save(mockUser(0,"admin"));
+        JobOrder job=jobRepository.save(Mockjob(uuid1,"job1"));
+        User user=userRepository.save(mockUser(uuid1,"admin"));
         applicationRepository.save(
                 Application.builder().apply_id(user.getId()).order_id(job.getOrder_id()).build());
 
@@ -168,7 +170,7 @@ class JobControllerTest   {
                 .andExpect(jsonPath("$.title").value("updatejob"))
                 .andDo(print());
         tear();
-        System.out.println(userRepository.findById(1));
+        System.out.println(userRepository.findById(uuid1));
     }
 
 
@@ -176,15 +178,15 @@ class JobControllerTest   {
     @Test
     @Transactional
     void showApplications() throws Exception {
-        JobOrder job=jobRepository.save(Mockjob(1,"job1"));
-        User user=userRepository.save(mockUser(0,"admin"));
+        JobOrder job=jobRepository.save(Mockjob(uuid1,"job1"));
+        User user=userRepository.save(mockUser(uuid1,"admin"));
         /*applicationRepository.save(
                 Application.builder().apply_id(user.getId()).order_id(job.getOrder_id()).build());
 */
         applicationRepository.save(Application.builder()
                 .order_id(job.getOrder_id()).apply_id(user.getId()).isaccepted(true).build());
 
-        ApplicationRequest requestDto=new ApplicationRequest(job.getOrder_id(), user.getId(), 0);
+        ApplicationRequest requestDto=new ApplicationRequest(job.getOrder_id(), user.getId(), uuid1);
         String request=objectMapper.writeValueAsString(requestDto);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/UserJob/Applications/show")
@@ -205,12 +207,12 @@ class JobControllerTest   {
     @Test
     @Transactional
     void removeApplication() throws Exception {
-        JobOrder job=jobRepository.save(Mockjob(1,"job1"));
-        User user=userRepository.save(mockUser(0,"admin"));
+        JobOrder job=jobRepository.save(Mockjob(uuid1,"job1"));
+        User user=userRepository.save(mockUser(uuid1,"admin"));
         applicationRepository.save(
                 Application.builder().apply_id(user.getId()).order_id(job.getOrder_id()).build());
 
-        Application BeforeRemove= applicationRepository.findById(user.getId()).orElse(null);
+        Application BeforeRemove= applicationRepository.findById(1).orElse(null);
         assert BeforeRemove != null;
 
 
@@ -227,7 +229,7 @@ class JobControllerTest   {
                 .andDo(print())
                 .andReturn();
 
-       Application AfterRemove= applicationRepository.findById(user.getId()).orElse(null);
+       Application AfterRemove= applicationRepository.findById(1).orElse(null);
         Assertions.assertNull(AfterRemove);
 
         tear();
@@ -237,14 +239,14 @@ class JobControllerTest   {
     @Test
     @Transactional
     void showAccept() throws Exception {
-        JobOrder job=jobRepository.save(Mockjob(1,"job1"));
-        User user=userRepository.save(mockUser(0,"admin"));
+        JobOrder job=jobRepository.save(Mockjob(uuid1,"job1"));
+        User user=userRepository.save(mockUser(uuid1,"admin"));
         applicationRepository.save(
                 Application.builder().apply_id(user.getId()).order_id(job.getOrder_id()).build());
 
 
-        User user2=userRepository.save(mockUser(0,"Leo"));     //with id 2
-        User user3=userRepository.save(mockUser(0,"alex"));    //with id 3
+        User user2=userRepository.save(mockUser(uuid1,"Leo"));     //with id 2
+        User user3=userRepository.save(mockUser(uuid1,"alex"));    //with id 3
 
         //Admin's application with accepted
         applicationRepository.save(Application.builder().order_id(job.getOrder_id()).apply_id(user.getId()).isaccepted(true).build());
@@ -254,7 +256,7 @@ class JobControllerTest   {
         applicationRepository.save(Application.builder().order_id(job.getOrder_id()).apply_id(user3.getId()).isaccepted(true).build());
 
         //add accept
-        ApplicationRequest res=new ApplicationRequest(job.getOrder_id(), 1,1);
+        ApplicationRequest res=new ApplicationRequest(job.getOrder_id(), uuid1,uuid1);
         String request=objectMapper.writeValueAsString(res);
 
 
@@ -279,12 +281,12 @@ class JobControllerTest   {
     @Test
     @Transactional
     void showApplicationshistory() throws Exception {
-        JobOrder job=jobRepository.save(Mockjob(1,"job1"));
-        User user=userRepository.save(mockUser(0,"admin"));
+        JobOrder job=jobRepository.save(Mockjob(uuid1,"job1"));
+        User user=userRepository.save(mockUser(uuid1,"admin"));
         applicationRepository.save(
                 Application.builder().apply_id(user.getId()).order_id(job.getOrder_id()).build());
 
-        JobOrder job2=jobRepository.save(Mockjob(1,"job2title"));
+        JobOrder job2=jobRepository.save(Mockjob(uuid1,"job2title"));
         applicationRepository.save(Application.builder().apply_id(user.getId()).order_id(job2.getOrder_id()).build());
 
         mockMvc.perform(get("/UserJob/application/history/{id}", user.getId())

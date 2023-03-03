@@ -6,9 +6,11 @@ import com.example.OrderService.Service.ApplicationService;
 import com.example.OrderService.dto.ApplicationRequest;
 import com.example.OrderService.dto.InfoResponse;
 import com.example.OrderService.dto.JobResponse;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 //the Integration test of apis in applicationController are also in JobControllerTest file
 @RestController
@@ -24,7 +26,7 @@ public class ApplicationController {
 
     @PostMapping("/job/apply")
     //user_id apply for the job
-    public String Applyjob(@RequestBody ApplicationRequest applyjobdto) {
+    public ResponseEntity<String> Applyjob(@RequestBody ApplicationRequest applyjobdto) {
         return applicationService.Applyjob(applyjobdto.getOrder_id()
                 ,applyjobdto.getApply_id(),applyjobdto.getPoster_id());
     }
@@ -40,13 +42,13 @@ public class ApplicationController {
     //the poster accept application
     //only the poster are permitted use this api
     @PutMapping("/Applications/accept")
-    public InfoResponse acceptApplication (@RequestBody ApplicationRequest dto){
+    public ResponseEntity<InfoResponse> acceptApplication (@RequestBody ApplicationRequest dto){
         return applicationService.acceptApplication(dto.getOrder_id(), dto.getPoster_id(), dto.getApply_id());
     }
 
     //delete the application
     @DeleteMapping("/Applications/delete")
-    public String RemoveApplication(@RequestBody ApplicationRequest dto){
+    public ResponseEntity<String> RemoveApplication(@RequestBody ApplicationRequest dto){
         return applicationService.deleteApplication(dto.getOrder_id(),dto.getApply_id());
     }
 
@@ -57,7 +59,7 @@ public class ApplicationController {
     }
     //show the number of jobs the user has applied
     @GetMapping("/application/history/{id}")
-    public List<JobResponse> showApplicationshistory(@PathVariable int id){
+    public List<JobResponse> showApplicationshistory(@PathVariable UUID id){
         return applicationService.showApplicationsToUser(id);
     }
 

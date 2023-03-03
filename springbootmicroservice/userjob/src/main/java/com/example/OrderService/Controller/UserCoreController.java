@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 //api for handling user
 
@@ -32,13 +33,13 @@ public class UserCoreController {
 
     //check whether the user can post/apply a job or not base on their score (credit)
     @GetMapping("/Checkuser/{id}")
-    public Boolean VerifyCanOrder(@PathVariable int id){
+    public Boolean VerifyCanOrder(@PathVariable UUID id){
         return userCoreservice.VerifyCanOrder(id);
     }
 
     //show a single user profile
     @GetMapping("/getProfile/{id}")
-    public InfoResponse getProfile(@PathVariable int id){
+    public InfoResponse getProfile(@PathVariable UUID id){
         return userCoreservice.getProfile(id);
     }
 
@@ -66,7 +67,7 @@ public class UserCoreController {
 
     //delete the user
     //@DeleteMapping("/deleteuser/{id}") => prevention of being delete the admin
-    public String deleteUser(@PathVariable int id){
+    public String deleteUser(@PathVariable UUID id){
         log.info("Deleted user id: '{}",id);
         return userCoreservice.Delete(id);
     }

@@ -11,7 +11,9 @@ import com.example.OrderService.dto.JobResponse;
 import com.example.OrderService.dto.NoticeRespond;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -23,6 +25,7 @@ import javax.swing.border.Border;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 //business logic involving application
@@ -61,19 +64,14 @@ public class ApplicationService {
     2.save the order
     3.send notice
     */
-    public String Applyjob(int order_id,int apply_id,int poster_id){
+    public ResponseEntity<String> Applyjob(int order_id, UUID apply_id, UUID poster_id){
 
         //check if the user sending too much application already
-        if(TooMuchApplication(order_id)){
-            return "you have too much application, please delete some";
-        };
-
         //check if the user have already applied the job
-        Application saved=applicationRepository.findByApply_idAndOrder_id(apply_id,order_id);
-        if(saved!=null){
-            return "you have already applied the job";
-        }
-
+        if(!VerifybeforeApply(order_id,apply_id)){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("somethings wrong! pls check on the notification");
+        };
 
         log.info("verify success");
 
@@ -85,17 +83,31 @@ public class ApplicationService {
 
         //sending notification to both applier and the poster
         String applier_notification="You have successfully applied for job id:"+order_id;
-        System.out.println(apply_id+order_id);
+
         sendNotice(applier_notification,apply_id);
 
         String poster_notification="You have received an application for job id:"+order_id;
         sendNotice(poster_notification,poster_id);
-        return "successfully added";
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body("successfully added")
+                ;
+
+    }
+    public boolean VerifybeforeApply(int order_id,UUID apply_id){
+        if(TooMuchApplication(apply_id)){
+            return false;
+        };
+
+        //check if the user have already applied the job
+        Application saved=applicationRepository.findByApply_idAndOrder_id(apply_id,order_id);
+        log.error("user have already applied the job");
+        return saved == null;
+
 
     }
 
     //method for sending notice to the notification microservice
-    public void sendNotice(String notification,int userid){
+    public void sendNotice(String notification, UUID userid){
         LocalDateTime myDateObj = LocalDateTime.now();
         DateTimeFormatter myFormatObj = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
         String formattedDate = myDateObj.format(myFormatObj);
@@ -106,20 +118,21 @@ public class ApplicationService {
 
     //check if there are too application for the user
     //if yes send notice to the client
-    public Boolean TooMuchApplication(int apply_id){
+    public Boolean TooMuchApplication(UUID apply_id){
         List<Application> ApplicationList = applicationRepository.findByApply_id(apply_id);
         if(ApplicationList.size()<=20){
             return false;
         }
         String notification="You have already send to much of applications.Please delete some and try again";
         sendNotice(notification, apply_id);
+        log.error("user have too much application");
         return true;
 
         }
 
 
     //display the list of user who have applied for the job
-    public List<InfoResponse> showApplications(int order_id,int user_id){
+    public List<InfoResponse> showApplications(int order_id,UUID user_id){
         List<Application> application = applicationRepository.findByOrder_id(order_id);
 
         log.info("user id "+user_id+" request for accessing applications in job id: "+order_id);
@@ -159,10 +172,14 @@ public class ApplicationService {
     3.send notice
     4.add the user to the chatroom (build base on the order_ud)
     * */
-    public InfoResponse acceptApplication(int orderId, int posterId,int applyId) {
+    public ResponseEntity<InfoResponse> acceptApplication(int orderId, UUID posterId,UUID applyId) {
         //check userId ,
         Application application = applicationRepository.findByApply_idAndOrder_id(applyId, orderId);
-        assert application != null;
+        if(application==null){
+            log.error("no such application found");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(null);
+        }
 
         //update the application
         log.info("valid request");
@@ -191,7 +208,9 @@ public class ApplicationService {
                 username,null);
         generateChat(Joinmessage);
 
-        return userCoreService.getProfile(applyId);
+        return ResponseEntity.status(HttpStatus.OK)
+                        .body(
+                userCoreService.getProfile(applyId));
 
     }
 
@@ -210,7 +229,7 @@ public class ApplicationService {
 
     }
     //show the Job profile which the user has applied
-    public List<JobResponse> showApplicationsToUser(int id) {
+    public List<JobResponse> showApplicationsToUser(UUID id) {
         List<Application> byApplyId = applicationRepository.findByApply_id(id);
 
         //map the Joborder to response
@@ -221,21 +240,23 @@ public class ApplicationService {
     }
 
     // user delete the application
-    public String deleteApplication(int orderId, int applyId) {
+    public ResponseEntity<String> deleteApplication(int orderId, UUID applyId) {
         //verify
         Application application= applicationRepository.findByApply_idAndOrder_id(applyId,orderId);
         if(application==null){
             log.error("no joborder found");
-            return "no joborder found";
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(null);
         }
         applicationRepository.deleteById(application.getApplication_id());
 
-        return "you have successfully removed the application";
+        return ResponseEntity.status(HttpStatus.OK)
+                .body("the application is deleted");
 
 
 }
     //show the application that are being accepted base on the order_id;
-    public List<InfoResponse> showAccepted(int order_id,int user_id){
+    public List<InfoResponse> showAccepted(int order_id,UUID user_id){
         //get all the application
         List<Application> applications = applicationRepository.findByOrder_id(order_id);
         if(applications ==null){

@@ -2,11 +2,13 @@ package com.example.OrderService.dto;
 
 import lombok.Data;
 
+import java.util.UUID;
+
 //class for the response for displaying user profile
 @Data
 public class InfoResponse {
 
-    private int id;
+    private UUID id;
     private String username;
     private String fullName;
     private String email;

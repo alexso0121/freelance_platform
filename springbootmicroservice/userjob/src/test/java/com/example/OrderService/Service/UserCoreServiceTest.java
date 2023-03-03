@@ -11,6 +11,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -25,6 +26,8 @@ class UserCoreServiceTest {
     @InjectMocks
     private UserCoreService userCoreService;
 
+    private final UUID uuid1=UUID.randomUUID();
+
 
 
 
@@ -32,7 +35,7 @@ class UserCoreServiceTest {
 
     private User mockUser(String username){
         return User.builder()
-                .id(1).username(username).fullName("admin").password("admin")
+                .id(uuid1).username(username).fullName("admin").password("admin")
                 .score(3.0)
                 .build();
     }
@@ -40,9 +43,9 @@ class UserCoreServiceTest {
     @Test
     void getProfile()  {
 
-        when(userRepository.findById(1)).thenReturn(Optional.ofNullable(mockUser("admin")));
+        when(userRepository.findById(uuid1)).thenReturn(Optional.ofNullable(mockUser("admin")));
 
-        InfoResponse response=userCoreService.getProfile(1);
+        InfoResponse response=userCoreService.getProfile(uuid1);
 
         Assertions.assertEquals("admin",response.getUsername());
     }
@@ -52,7 +55,7 @@ class UserCoreServiceTest {
     @Test //check case if already have the username
     void updateUserRepeatedUsername() {
         UserCoreService Spy=spy(userCoreService);
-        when(userRepository.findById(1)).thenReturn(Optional.ofNullable(mockUser("admin")));
+        when(userRepository.findById(uuid1)).thenReturn(Optional.ofNullable(mockUser("admin")));
         doReturn(mockUser("alex")).when(Spy).saveAndReturn(mockUser(any()));
 
         String res=Spy.updateUser(mockUser("alex"));
@@ -65,9 +68,9 @@ class UserCoreServiceTest {
     @Test
     void verifyCanOrder() {
 
-        when(userRepository.findById(1)).thenReturn(Optional.ofNullable(mockUser("admin")));
+        when(userRepository.findById(uuid1)).thenReturn(Optional.ofNullable(mockUser("admin")));
 
-        Boolean res=userCoreService.VerifyCanOrder(1);
+        Boolean res=userCoreService.VerifyCanOrder(uuid1);
 
         Assertions.assertEquals(true,res);
 
@@ -76,9 +79,9 @@ class UserCoreServiceTest {
     void CannotOrder() {
         User user=mockUser("admin");
         user.setScore(1.9);
-        when(userRepository.findById(1)).thenReturn(Optional.ofNullable(user));
+        when(userRepository.findById(uuid1)).thenReturn(Optional.ofNullable(user));
 
-        Boolean res=userCoreService.VerifyCanOrder(1);
+        Boolean res=userCoreService.VerifyCanOrder(uuid1);
 
         Assertions.assertEquals(false,res);
 

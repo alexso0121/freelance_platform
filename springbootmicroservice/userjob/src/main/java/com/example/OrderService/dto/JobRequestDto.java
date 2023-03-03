@@ -3,11 +3,13 @@ package com.example.OrderService.dto;
 import lombok.Builder;
 import lombok.Data;
 
+import java.util.UUID;
+
 @Data
 @Builder
 public class JobRequestDto {
     private int order_id;
-    private int user_id;
+    private UUID user_id;
     private String title;
     private String description;
     private String requirement;

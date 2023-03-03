@@ -8,7 +8,9 @@ import com.springboot.sohinalex.java.dto.SignupDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.ReactiveAuthenticationManager;
@@ -27,6 +29,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -79,7 +82,7 @@ public class TokenService {
 
     }
     //convert for generating jwt token
-    public String generateToken(Authentication user,int userid){
+    public String generateToken(Authentication user, UUID userid){
         log.info("generate token");
 
         Instant now=Instant.now();
@@ -143,7 +146,7 @@ public class TokenService {
                 .doOnNext(System.out::println);
     }
 
-    //build the authentication object
+    //build the Mono<authentication> object
     public Mono<Authentication> BuildAuthentication(user_info user){
         return reactiveAuthenticationManager.authenticate(
                         new UsernamePasswordAuthenticationToken(
@@ -154,7 +157,7 @@ public class TokenService {
     }
 
     //sending notification to the user when auth success
-    public void sendNotice(String notification,int userid){
+    public void sendNotice(String notification,UUID userid){
         LocalDateTime myDateObj = LocalDateTime.now();
         DateTimeFormatter myFormatObj = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
         String formattedDate = myDateObj.format(myFormatObj);
@@ -163,8 +166,15 @@ public class TokenService {
         ));
     }
 
-    //sign up
-    public Mono<AuthResponse> signup(SignupDto user) {
+    /*
+    signup method:
+    1.check is the username already exist
+    2.save the user to userjob microservice
+    3.build Mono<authentication object>
+    4.send notice
+    5.return the token
+    */
+    public Mono<ResponseEntity<AuthResponse>> signup(SignupDto user) {
 
             log.info("signup start");
         System.out.println(user);
@@ -182,8 +192,9 @@ public class TokenService {
                     . flatMap(
                     nameExist->{   //check username exist
                         if(nameExist){  //case when the username already exist=>return error
-                            log.info("repeated");
-                            return Mono.error(new Error("username exist"));
+                            log.error("username already exist");
+                            return Mono.just(ResponseEntity.status(HttpStatus.FORBIDDEN)
+                                    .body(null));
                         } else      //case when no username found=> can signup
                         {
                             log.info("not repeat");
@@ -200,7 +211,9 @@ public class TokenService {
                                                     //send signup notification
                                                     String notification="Welcome "+savedUser.getUsername()+"! You have successfully signed up ";
                                                     sendNotice(notification,savedUser.getId());
-                                                    return Mono.just(new AuthResponse(savedUser.getId(), token)); //return id and token
+                                                    return Mono.just(
+                                                                    ResponseEntity.status(HttpStatus.CREATED)
+                                                                            .body(new AuthResponse(savedUser.getId(), token))); //return id and token
                                     });
                                     }
                             );
@@ -218,13 +231,23 @@ public class TokenService {
 
 
     //sign in
-    public Mono<AuthResponse> signin(Authentication auth) {
+    /*
+    find the user with the username
+    */
+    public Mono<ResponseEntity<AuthResponse>> signin(Authentication auth) {
         //auth
+
+        user_info emptyuser=user_info.builder().build();
+
         return finduser(auth.getName())     //get user credential from database
                 .doOnNext(user_info -> System.out.println(user_info.getPassword()))
-                .switchIfEmpty(Mono.error(new BadCredentialsException("Username not found") ))
+                .defaultIfEmpty(emptyuser)
                 .map(res->{
-                    if(passwordEncoder.matches(auth.getCredentials().toString(),    //auth check
+                    if(res.equals(emptyuser)){
+                        log.error("no user with the username found");
+                       return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                                .body(null);
+                    }else if(passwordEncoder.matches(auth.getCredentials().toString(),    //auth check
                             res.getPassword())){
                         log.info("Password Match");
 
@@ -232,11 +255,13 @@ public class TokenService {
                         String notification="Welcome "+res.getUsername()+"! You have successfully signed in ";
                         sendNotice(notification,res.getId());
 
-                        return new AuthResponse(res.getId(),generateToken(auth,res.getId()));
+                        return ResponseEntity.status(HttpStatus.OK).body(
+                                new AuthResponse(res.getId(),generateToken(auth,res.getId())));
                     }
                     else{
-                        log.info("invalid password");
-                        return null;
+                        log.error("invalid password");
+                        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                                .body(null);
                     }
                 });
 
