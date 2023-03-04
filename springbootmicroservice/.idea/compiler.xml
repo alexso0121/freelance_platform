@@ -12,22 +12,30 @@
         <module name="notification" />
         <module name="chatroom" />
         <module name="eureka-server" />
+        <module name="Payment-service" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="chatroom (1)" target="16" />
+      <module name="chatroom (2)" target="16" />
+      <module name="Payment" target="16" />
       <module name="SimpleChatroom" target="16" />
       <module name="User" target="16" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="Payment" options="-parameters" />
+      <module name="Payment-service" options="-parameters" />
       <module name="SimpleChatroom" options="-parameters" />
       <module name="User" options="-parameters" />
       <module name="api-gateway" options="-parameters" />
       <module name="chatroom" options="-parameters" />
+      <module name="chatroom (1)" options="-parameters" />
+      <module name="chatroom (2)" options="-parameters" />
       <module name="eureka-server" options="-parameters" />
       <module name="notification" options="-parameters" />
-      <module name="springbootmicroservice" options="" />
+      <module name="springbootmicroservice" options="-parameters" />
       <module name="userjob" options="-parameters" />
     </option>
   </component>

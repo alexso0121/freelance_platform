@@ -24,6 +24,7 @@
     <module>eureka-server</module>
     <module>api-gateway</module>
     <module>chatroom</module>
+    <module>Payment-service</module>
 
   </modules>
 
