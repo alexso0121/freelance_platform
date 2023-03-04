@@ -7,8 +7,9 @@ a demo platform for freelancer finding jobs or finding freelancers
 
 - applied the springboot microservice architecture with docker.
 - api-gateway for routing and securing the server by oauth2 resource server and json web token in spring webflux security.
-- other services : chatroom and notification
+- other services : chatroom , notification and payment serive
 - spring cloud service are shown in docker-compose.yml file
+- stripe api is used to mock the online payment 
 - test with integration test and unit test in test directory in each service.
 - Mongodb and mysql are used for database
 - deployed to aws ecs
@@ -97,3 +98,8 @@ pls see the apis-doc in the code file above
 - service for listening asychronous notification
 - spring cloud kafka messaging queue
 - mongodb
+
+6. payment-service
+- use stripe api
+- reactive programming
+- administrative fee is charged during payment
