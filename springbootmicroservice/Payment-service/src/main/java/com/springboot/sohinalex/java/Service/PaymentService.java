@@ -59,6 +59,7 @@ public class PaymentService {
         }
 
         public Charge buildCharge(String customerId, double amount) throws Exception {
+
             String sourceCard =     Customer.retrieve(customerId).getDefaultSource();
             Map<String, Object> chargeParams = new HashMap<String, Object>();
             chargeParams.put("amount", amount);
@@ -77,17 +78,21 @@ public class PaymentService {
                 userid,formattedDate,notification
         ));
     }
+
     public Mono<ResponseEntity<Payment>> chargeCustomerCard(String customerId, double amount, UUID user_id) throws Exception {
+        amount*=1.02; //fee for administration
         Charge charge=buildCharge(customerId,amount);
 
         //send notice
         String notification= "The payment is successful.Pls notice us if your freelancer finish the job or if you want to cancel the order";
         sendNotice(notification,user_id);
 
+
         return savepayment(charge.getId(), Payment.PaymentType.CHARGE,user_id,amount);
 
 
     }
+    //main saving method
     public Mono<ResponseEntity<Payment>> savepayment(String charge_id,Payment.PaymentType type,UUID user_id,Double amount){
         return paymentRepository.save(Payment.builder()
                         .charge_id(charge_id)

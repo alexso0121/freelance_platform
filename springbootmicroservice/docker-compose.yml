@@ -126,6 +126,20 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=docker
 
+  payment-service:
+    image: alex0121/payment-service:latest
+    build:
+      context: payment-service/.
+      dockerfile: Dockerfile.layered
+    ports:
+      - "8070:8070"
+    depends_on:
+      - zipkin
+
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+
+
 #  prometheus:
 #    image: prom/prometheus:v2.37.6
 #    container_name: prometheus

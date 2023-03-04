@@ -15,6 +15,8 @@ import java.util.UUID;
 
 
 /*
+** 0.02 % administrative fee will be charged
+
 Freelance_platform Payment workflow
 1.job poster paid for the job to the platform after it finds enough customers (administrative fee will be charged )
 2.freelancer finish the jobs
@@ -48,6 +50,7 @@ public class PaymentController {
         return paymentService.createCustomer(request.getToken(),request.getEmail(),request.getUser_id());
     }
 
+    //api for job poster paid to the platform
     @PostMapping("/transfer/Poster")
     public Mono<ResponseEntity<Payment>> PosterPaymentToPlatform(@RequestBody PaymentRequest request) throws Exception {
         return paymentService.chargeCustomerCard(request.getCustomerId(), request.getAmount(), request.getUser_id());
@@ -59,15 +62,19 @@ public class PaymentController {
         return paymentService.payoutToFreelancer(request.getCustomerId(), request.getAmount(), request.getUser_id());
     }
 
+    //api for refund from platform to job poster
     @PostMapping("/refund/{charge_id}")
     public  Mono<ResponseEntity<Payment>> Refund(@PathVariable String charge_id){
         return paymentService.refundPayment(charge_id);
     }
+
+    //display all payment for the user base on user_id
     @GetMapping("/transaction/display/")
     public Flux<Payment> showTransactionByUserId(@RequestParam UUID user_id){
         return paymentRepository.findByUser_id(user_id);
     }
 
+    //display all data in db
     @GetMapping("/transaction/all")
     public Flux<Payment> showTransactionAll(){
         return paymentRepository.findAll();
