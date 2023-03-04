@@ -56,6 +56,23 @@ pls see the apis-doc in the code file above
     
 <Br>
 
+# Expect WorkFlow:
+1.user authentication
+
+2.apply job or add job to the platform
+
+3.job poster accept the application
+
+4.job poster paid for the job to the platform
+
+5.build a chatroom for the job poster and the freelancer
+
+6.freelancer finished the job and poster satified with it 
+
+7.platform paid to the freelancer
+
+--user will get the notification for each event
+
 # Microservice architectire:
 1. api-gateway:
 - service for authentication routing the apis to the corresponding service
