@@ -1,13 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
- import App from './App';
+import App from './App';
 import reportWebVitals from './reportWebVitals';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import Hello from './Hello'
-
 import {BrowserRouter,Routes,Route} from 'react-router-dom';
-
+import Hello from './Component/Hello';
 function Index(){
 
   return(
@@ -25,7 +22,9 @@ function Index(){
     </BrowserRouter>
   );
 } 
-const root = ReactDOM.createRoot(document.getElementById('root'));
+const root = ReactDOM.createRoot(
+  document.getElementById('root') as HTMLElement
+);
 root.render(
   <React.StrictMode>
     <Index />
