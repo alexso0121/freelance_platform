@@ -5,6 +5,8 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import {BrowserRouter,Routes,Route} from 'react-router-dom';
 import Hello from './Component/Hello';
+import {Provider} from "react-redux"
+import { store } from './reduxControl/store';
 function Index(){
 
   return(
@@ -27,7 +29,10 @@ const root = ReactDOM.createRoot(
 );
 root.render(
   <React.StrictMode>
-    <Index />
+    <Provider store={store}> 
+         <Index />
+         </Provider>
+
   </React.StrictMode>
 );
 
