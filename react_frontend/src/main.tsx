@@ -2,16 +2,17 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
-import reportWebVitals from './reportWebVitals';
+import Navbar from './Component/Navbar';
 import {BrowserRouter,Routes,Route} from 'react-router-dom';
 import Hello from './Component/Hello';
 import {Provider} from "react-redux"
-import { store } from './reduxControl/store';
+import { store,persistor } from './reduxControl/store';
+import { PersistGate } from 'redux-persist/integration/react';
 function Index(){
 
   return(
     <BrowserRouter>
-
+      <Navbar />
       {/* <Layout  userStatus={userStatus}
   /> */}
       <Routes>
@@ -29,14 +30,14 @@ const root = ReactDOM.createRoot(
 );
 root.render(
   <React.StrictMode>
-    <Provider store={store}> 
-         <Index />
+    <Provider store={store}>
+      <PersistGate loading={null} persistor={persistor} >
+        <Index />
+      </PersistGate>
+         
          </Provider>
 
   </React.StrictMode>
 );
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
+
